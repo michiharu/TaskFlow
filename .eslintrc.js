@@ -45,6 +45,11 @@ module.exports = {
                 pattern: 'react-dom',
                 group: 'builtin',
               },
+              {
+                pattern: '@mui/material',
+                group: 'external',
+                position: 'after',
+              },
             ],
             pathGroupsExcludedImportTypes: ['react', 'react-dom'],
             'newlines-between': 'always',
