@@ -14,7 +14,6 @@ module.exports = {
     ecmaFeatures: { jsx: true },
     ecmaVersion: 2020,
     sourceType: 'module',
-    project: './tsconfig.json',
   },
   plugins: ['react', '@typescript-eslint', 'import'],
   settings: {
@@ -26,9 +25,10 @@ module.exports = {
   },
   overrides: [
     {
-      // TypeScript 用に設定を上書く
       files: ['*.ts', '*.tsx'],
-      rules: {},
+      parserOptions: {
+        project: ['./tsconfig.json'],
+      },
     },
     {
       // import を sort するため、AutoFix をかける範囲で設定を上書く
