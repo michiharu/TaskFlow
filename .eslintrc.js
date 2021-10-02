@@ -21,7 +21,9 @@ module.exports = {
     react: { version: 'detect' },
     'import/resolver': { typescript: { alwaysTryTypes: true } },
   },
-  rules: {},
+  rules: {
+    '@typescript-eslint/explicit-module-boundary-types': ['error'],
+  },
   overrides: [
     {
       // TypeScript 用に設定を上書く
