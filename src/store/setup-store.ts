@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 
-import treeSlice from './tree-slice';
+import { treeSlice } from './tree-slice';
 
 export const rootReducer = combineReducers({
   tree: treeSlice.reducer,
