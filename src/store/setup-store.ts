@@ -1,7 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 
-export const rootReducer = combineReducers({});
+import treeSlice from './tree-slice';
+
+export const rootReducer = combineReducers({
+  tree: treeSlice.reducer,
+});
 
 export type RootState = ReturnType<typeof rootReducer>;
 
