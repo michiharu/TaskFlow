@@ -1,6 +1,6 @@
 {
-  "short_name": "FlowLike",
-  "name": "FlowLike",
+  "name": "TaskFlow",
+  "short_name": "TaskFlow",
   "icons": [
     {
       "src": "favicon.ico",
