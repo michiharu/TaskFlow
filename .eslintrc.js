@@ -21,7 +21,11 @@ module.exports = {
     'import/resolver': { typescript: { alwaysTryTypes: true } },
   },
   rules: {
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
+
     '@typescript-eslint/explicit-module-boundary-types': ['error'],
+    'import/no-extraneous-dependencies': 'off',
   },
   overrides: [
     {
@@ -48,18 +52,21 @@ module.exports = {
                 group: 'builtin',
               },
               {
-                pattern: '@mui/material*',
+                pattern: '@mui/material',
                 group: 'external',
                 position: 'after',
               },
               {
-                pattern: '@mui/icons-material*',
-                group: 'external',
-                position: 'after',
+                pattern: '@mui/icons-material',
+                group: 'parent',
+                position: 'before',
               },
             ],
             pathGroupsExcludedImportTypes: ['react', 'react-dom'],
             'newlines-between': 'always',
+            alphabetize: {
+              order: 'asc' /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
+            },
           },
         ],
       },
