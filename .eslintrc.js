@@ -48,7 +48,12 @@ module.exports = {
                 group: 'builtin',
               },
               {
-                pattern: '@mui/material',
+                pattern: '@mui/material*',
+                group: 'external',
+                position: 'after',
+              },
+              {
+                pattern: '@mui/icons-material*',
                 group: 'external',
                 position: 'after',
               },
