@@ -51,9 +51,9 @@
     "prettier": "^2.4.1"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx}": [
-      "prettier --write \"src/**/*.{ts,tsx}\"",
-      "eslint --fix --ext .ts,.tsx ./src"
+    "src/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
     ]
   },
   "private": true,
