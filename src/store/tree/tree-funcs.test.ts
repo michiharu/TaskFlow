@@ -1,34 +1,11 @@
 import { treeSettings as settings } from '../../const';
-import { Size, UUID } from '../../types';
-import { FlowEntity, FlowNode } from '../../types/tree-node';
+import { Size } from '../../types';
+import { FlowNode } from '../../types/tree-node';
 
 import { entityToTree, setSize } from './tree-funcs';
+import { rootOnlyEntities, rootHasFlatChildren, rootHasNestedChildren } from './tree-test-data';
 
 const { body, indent, m } = settings;
-
-const rootId = '12345678-9abc-4def-9000-000000000000' as UUID;
-const rootEntity: FlowEntity = {
-  id: rootId,
-  type: 'root',
-  index: 0,
-  childIds: [],
-  direction: 'vertical',
-  open: true,
-  text: { primary: '', secondary: '' },
-};
-
-const childId1 = '12345678-9abc-4def-9000-000000000001' as UUID;
-const childId2 = '12345678-9abc-4def-9000-000000000002' as UUID;
-// const childId3 = '12345678-9abc-4def-9000-000000000003' as UUID;
-const entity: FlowEntity = {
-  id: rootId,
-  type: 'task',
-  index: 0,
-  childIds: [],
-  direction: 'vertical',
-  open: true,
-  text: { primary: '', secondary: '' },
-};
 
 const noChildOpenTree: Size = {
   width: indent * m + body.width,
@@ -36,10 +13,11 @@ const noChildOpenTree: Size = {
 };
 
 describe('root only', () => {
-  const entities = { [rootId]: rootEntity };
-  const node: FlowNode = { ...rootEntity, children: [] };
+  const { root } = rootOnlyEntities;
+  const entities = { [root.id]: root };
+  const node: FlowNode = { ...root, children: [] };
   test('entityToTree', () => {
-    expect(entityToTree(rootId, entities)).toEqual(node);
+    expect(entityToTree(root.id, entities)).toEqual(node);
   });
   test('setSize', () => {
     const result: FlowNode = { ...node, size: { body, tree: noChildOpenTree } };
@@ -48,21 +26,18 @@ describe('root only', () => {
 });
 
 describe('root has children (flat, open)', () => {
-  const entities = {
-    [rootId]: { ...rootEntity, childIds: [childId1, childId2] },
-    [childId1]: { ...entity, id: childId1 },
-    [childId2]: { ...entity, id: childId2 },
-  };
+  const { root, child1, child2 } = rootHasFlatChildren;
+  const entities = { [root.id]: root, [child1.id]: child1, [child2.id]: child2 };
   const node: FlowNode = {
-    ...rootEntity,
-    childIds: [childId1, childId2],
+    ...root,
+    childIds: [child1.id, child2.id],
     children: [
-      { ...entity, id: childId1, children: [] },
-      { ...entity, id: childId2, children: [] },
+      { ...child1, children: [] },
+      { ...child2, children: [] },
     ],
   };
   test('entityToTree', () => {
-    expect(entityToTree(rootId, entities)).toEqual(node);
+    expect(entityToTree(root.id, entities)).toEqual(node);
   });
   test('setSize', () => {
     const rootTreeSize: Size = {
@@ -73,18 +48,8 @@ describe('root has children (flat, open)', () => {
       ...node,
       size: { body: settings.body, tree: rootTreeSize },
       children: [
-        {
-          ...entity,
-          id: childId1,
-          size: { body, tree: noChildOpenTree },
-          children: [],
-        },
-        {
-          ...entity,
-          id: childId2,
-          size: { body, tree: noChildOpenTree },
-          children: [],
-        },
+        { ...child1, size: { body, tree: noChildOpenTree }, children: [] },
+        { ...child2, size: { body, tree: noChildOpenTree }, children: [] },
       ],
     };
     expect(setSize(node, settings, true)).toEqual(result);
@@ -92,25 +57,21 @@ describe('root has children (flat, open)', () => {
 });
 
 describe('root has children (nested)', () => {
-  const entities = {
-    [rootId]: { ...rootEntity, childIds: [childId1] },
-    [childId1]: { ...entity, id: childId1, childIds: [childId2] },
-    [childId2]: { ...entity, id: childId2, childIds: [] },
-  };
+  const { root, child1, child2 } = rootHasNestedChildren;
+  const entities = { [root.id]: root, [child1.id]: child1, [child2.id]: child2 };
   const node: FlowNode = {
-    ...rootEntity,
-    childIds: [childId1],
+    ...root,
+    childIds: [child1.id],
     children: [
       {
-        ...entity,
-        id: childId1,
-        childIds: [childId2],
-        children: [{ ...entity, id: childId2, childIds: [], children: [] }],
+        ...child1,
+        childIds: [child2.id],
+        children: [{ ...child2, childIds: [], children: [] }],
       },
     ],
   };
   test('entityToTree', () => {
-    expect(entityToTree(rootId, entities)).toEqual(node);
+    expect(entityToTree(root.id, entities)).toEqual(node);
   });
 
   test('setSize', () => {
@@ -127,14 +88,12 @@ describe('root has children (nested)', () => {
       size: { body: settings.body, tree: rootTreeSize },
       children: [
         {
-          ...entity,
-          id: childId1,
+          ...child1,
           size: { body, tree: child1TreeSize },
-          childIds: [childId2],
+          childIds: [child2.id],
           children: [
             {
-              ...entity,
-              id: childId2,
+              ...child2,
               size: { body, tree: noChildOpenTree },
               children: [],
             },

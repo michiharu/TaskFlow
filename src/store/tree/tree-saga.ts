@@ -3,6 +3,6 @@ import { put } from '@redux-saga/core/effects';
 
 import { treeSlice } from './tree-slice';
 
-export function* testCreateTree() {
-  yield put(treeSlice.actions.createTree());
+export function* createTestTree() {
+  yield put(treeSlice.actions.createTestTree());
 }
