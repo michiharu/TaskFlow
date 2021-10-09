@@ -1,4 +1,6 @@
-export const uuid4 = (): string => {
+import { UUID } from '../types';
+
+export const uuid4 = (): UUID => {
   // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js
   // const FORMAT: string = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
   const chars = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split('');
@@ -12,5 +14,5 @@ export const uuid4 = (): string => {
         break;
     }
   }
-  return chars.join('');
+  return chars.join('') as UUID;
 };
