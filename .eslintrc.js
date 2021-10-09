@@ -21,6 +21,7 @@ module.exports = {
     'import/resolver': { typescript: { alwaysTryTypes: true } },
   },
   rules: {
+    'max-len': ['error', { code: 120 }],
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
 
