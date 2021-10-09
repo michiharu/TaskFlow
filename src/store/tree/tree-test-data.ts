@@ -14,6 +14,7 @@ export const root: FlowEntity = {
 
 const childId1 = '12345678-9abc-4def-9000-000000000001' as UUID;
 const childId2 = '12345678-9abc-4def-9000-000000000002' as UUID;
+const childId3 = '12345678-9abc-4def-9000-000000000003' as UUID;
 export const entity: FlowEntity = {
   id: rootId,
   type: 'task',
@@ -26,14 +27,21 @@ export const entity: FlowEntity = {
 
 export const rootOnlyEntities = { root } as const;
 
-export const rootHasFlatChildren = {
+export const flatChildren = {
   root: { ...root, childIds: [childId1, childId2] },
   child1: { ...entity, id: childId1 },
   child2: { ...entity, id: childId2 },
 };
 
-export const rootHasNestedChildren = {
+export const nestedChildren = {
   root: { ...root, childIds: [childId1] },
   child1: { ...entity, id: childId1, childIds: [childId2] },
   child2: { ...entity, id: childId2 },
+};
+
+export const closedChildren = {
+  root: { ...root, childIds: [childId1, childId3] },
+  child1: { ...entity, id: childId1, childIds: [childId2], open: false },
+  child2: { ...entity, id: childId2 },
+  child3: { ...entity, id: childId3, open: false },
 };
