@@ -5,6 +5,7 @@
   "author": "michiharu",
   "scripts": {
     "build": "react-scripts build",
+    "coverage": "npm run test -- --coverage .",
     "eject": "react-scripts eject",
     "fix": "npm run format && npm run lint && npx sort-package-json",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
