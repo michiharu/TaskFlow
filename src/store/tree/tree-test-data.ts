@@ -1,47 +1,48 @@
 import { UUID } from '../../types';
 import { FlowEntity } from '../../types/tree-node';
 
-const rootId = '12345678-9abc-4def-9000-000000000000' as UUID;
-export const root: FlowEntity = {
-  id: rootId,
-  type: 'root',
-  index: 0,
-  childIds: [],
-  direction: 'vertical',
-  open: true,
-  text: { primary: '', secondary: '' },
-};
+import { entityFactory } from './tree-funcs';
 
+export const rootId = '12345678-9abc-4def-9000-000000000000' as UUID;
 const childId1 = '12345678-9abc-4def-9000-000000000001' as UUID;
 const childId2 = '12345678-9abc-4def-9000-000000000002' as UUID;
 const childId3 = '12345678-9abc-4def-9000-000000000003' as UUID;
-export const entity: FlowEntity = {
-  id: rootId,
-  type: 'task',
-  index: 0,
-  childIds: [],
-  direction: 'vertical',
-  open: true,
-  text: { primary: '', secondary: '' },
+
+type Entities = { [key in string]: FlowEntity };
+
+export const rootOnlyEntities: Entities = { root: entityFactory(rootId, [], { type: 'root' }) };
+
+export const flatEntities: Entities = {
+  root: entityFactory(rootId, [childId1, childId2, childId3], { type: 'root' }),
+  child1: entityFactory(childId1),
+  child2: entityFactory(childId2),
+  child3: entityFactory(childId3),
 };
 
-export const rootOnlyEntities = { root } as const;
-
-export const flatChildren = {
-  root: { ...root, childIds: [childId1, childId2] },
-  child1: { ...entity, id: childId1 },
-  child2: { ...entity, id: childId2 },
+export const nestedEntities: Entities = {
+  root: entityFactory(rootId, [childId1], { type: 'root' }),
+  child1: entityFactory(childId1, [childId2]),
+  child2: entityFactory(childId2, [childId3]),
+  child3: entityFactory(childId3),
 };
 
-export const nestedChildren = {
-  root: { ...root, childIds: [childId1] },
-  child1: { ...entity, id: childId1, childIds: [childId2] },
-  child2: { ...entity, id: childId2 },
+export const closedEntities: Entities = {
+  root: entityFactory(rootId, [childId1, childId3], { type: 'root' }),
+  child1: entityFactory(childId1, [childId2], { open: false }),
+  child2: entityFactory(childId2),
+  child3: entityFactory(childId3, [], { open: false }),
 };
 
-export const closedChildren = {
-  root: { ...root, childIds: [childId1, childId3] },
-  child1: { ...entity, id: childId1, childIds: [childId2], open: false },
-  child2: { ...entity, id: childId2 },
-  child3: { ...entity, id: childId3, open: false },
+export const horizontalEntities: Entities = {
+  root: entityFactory(rootId, [childId1, childId3], { type: 'root', direction: 'horizontal' }),
+  child1: entityFactory(childId1, [childId2], { direction: 'horizontal' }),
+  child2: entityFactory(childId2),
+  child3: entityFactory(childId3),
+};
+
+export const nestedClosedEntities: Entities = {
+  root: entityFactory(rootId, [childId1], { type: 'root' }),
+  child1: entityFactory(childId1, [childId2], { open: false }),
+  child2: entityFactory(childId2, [childId3]),
+  child3: entityFactory(childId3),
 };

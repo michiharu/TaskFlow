@@ -6,25 +6,18 @@ import { FlowEntity, FlowNode, TreeSettings } from '../../types/tree-node';
 
 import { TreeEntityState } from './tree-slice';
 
-export const rootFactory = (id: UUID, childIds: UUID[], primary: string): FlowEntity => ({
-  id,
-  index: 0,
-  childIds,
-  type: 'root',
-  direction: 'vertical',
-  open: true,
-  text: { primary, secondary: '' },
-});
+type FactoryOptions = Partial<Omit<FlowEntity, 'id' | 'childIds'>>;
 
-export const taskFactory = (id: UUID, childIds: UUID[], primary: string): FlowEntity => ({
-  id,
-  index: 0,
-  childIds,
-  type: 'task',
-  direction: 'vertical',
-  open: true,
-  text: { primary, secondary: '' },
-});
+export const entityFactory = (id: UUID, childIds: UUID[] = [], options: FactoryOptions = {}): FlowEntity => {
+  const {
+    index = 0,
+    type = 'task',
+    direction = 'vertical',
+    open = true,
+    text = { primary: '', secondary: '' },
+  } = options;
+  return { id, childIds, index, type, direction, open, text };
+};
 
 export const entityToTree = (id: UUID, entities: Dictionary<FlowEntity>): FlowNode => {
   const entity = entities[id];
