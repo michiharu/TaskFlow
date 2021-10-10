@@ -1,10 +1,14 @@
 import { createTheme } from '@mui/material/styles';
 
-// A custom theme for this app
-const theme = createTheme({
+const themeOptions = {
   palette: {
     mode: 'dark',
   },
-});
+} as const;
 
-export default theme;
+export const theme = createTheme(themeOptions);
+
+export const cardTheme = createTheme({
+  ...themeOptions,
+  typography: { fontSize: 10 },
+});

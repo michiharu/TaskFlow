@@ -7,7 +7,7 @@ import { CssBaseline } from '@mui/material';
 
 import App from './App';
 import { store } from './store/setup-store';
-import theme from './theme';
+import { theme } from './theme';
 
 const Providers: React.FC = () => {
   return (
