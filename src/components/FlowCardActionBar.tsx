@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { SxProps } from '@mui/system';
 import { Html } from 'react-konva-utils';
+import { useDispatch } from 'react-redux';
 
 import { ThemeProvider, Box, IconButton } from '@mui/material';
 
@@ -14,6 +15,7 @@ import {
 } from '@mui/icons-material';
 
 import { cardActionBarHeight } from '../const';
+import { treeSlice } from '../store/tree/tree-slice';
 import { cardTheme } from '../theme';
 import { FlowEntity, TreeSettings } from '../types/tree-node';
 
@@ -26,8 +28,15 @@ type Props = {
 };
 
 const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
-  const { open, direction } = entity;
+  const { id, open, direction } = entity;
   const { card } = settings;
+  const dispatch = useDispatch();
+
+  const handleOpen = () => dispatch(treeSlice.actions.update({ id, changes: { open: !open } }));
+  const handleChangeDirection = () => {
+    const next = direction !== 'vertical' ? 'vertical' : 'horizontal';
+    dispatch(treeSlice.actions.update({ id, changes: { direction: next } }));
+  };
 
   const buttonSx: SxProps = {
     position: 'absolute',
@@ -47,10 +56,14 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
           <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 2.5 - mx }}>
             <AddIcon fontSize="inherit" />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 1.5 - mx }}>
+          <IconButton
+            size="small"
+            sx={{ ...buttonSx, left: card.width - iconArea * 1.5 - mx }}
+            onClick={handleChangeDirection}
+          >
             <ArrowDownwardIcon fontSize="inherit" sx={{ transition, transform: directionTransform }} />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 0.5 - mx }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 0.5 - mx }} onClick={handleOpen}>
             {open ? <ExpandLessIcon fontSize="inherit" /> : <ExpandMoreIcon fontSize="inherit" />}
           </IconButton>
         </Box>

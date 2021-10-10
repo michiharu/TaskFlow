@@ -1,4 +1,4 @@
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, Update, PayloadAction as PA } from '@reduxjs/toolkit';
 
 import { treeSettings as settings } from '../../const';
 import { FlowEntity, TreeRoot } from '../../types/tree-node';
@@ -25,10 +25,13 @@ export const treeSlice = createSlice({
       state.rootId = root.id;
       adapter.setAll(state, [root, child1, child2, child3]);
 
-      const coordinated = setRect(state);
-      console.log(coordinated);
-
-      adapter.setAll(state, coordinated);
+      const calculated = setRect(state);
+      adapter.setAll(state, calculated);
+    },
+    update(state, { payload: entity }: PA<Update<FlowEntity>>) {
+      adapter.updateOne(state, entity);
+      const calculated = setRect(state);
+      adapter.setAll(state, calculated);
     },
   },
 });
