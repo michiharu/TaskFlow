@@ -15,7 +15,7 @@ import {
 } from '@mui/icons-material';
 
 import { iconPX } from '../const';
-import theme from '../theme';
+import { cardTheme } from '../theme';
 import { FlowEntity, TreeSettings } from '../types/tree-node';
 
 type Props = {
@@ -35,15 +35,39 @@ const FlowCard: React.FC<Props> = ({ entity, settings }) => {
       <Rect ref={cardRef} {...tree} fill="#0af1" />
       <Rect {...card} fill="#aaa1" />
       <Html>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={cardTheme}>
           <Box sx={{ width: 0, height: 0, position: 'relative' }}>
-            <IconButton size="small" sx={{ position: 'absolute', top: 6, left: 6 }}>
+            <IconButton
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: bar.height / 2,
+                left: iconPX * 0.5 + 4,
+                transform: 'translate3d(-50%, -50%, 0)',
+              }}
+            >
               <CloseIcon fontSize="inherit" />
             </IconButton>
-            <IconButton size="small" sx={{ position: 'absolute', top: 6, left: card.width - iconPX * 3 - 18 }}>
+            <IconButton
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: bar.height / 2,
+                left: card.width - iconPX * 2.5 - 4,
+                transform: 'translate3d(-50%, -50%, 0)',
+              }}
+            >
               <AddIcon fontSize="inherit" />
             </IconButton>
-            <IconButton size="small" sx={{ position: 'absolute', top: 6, left: card.width - iconPX * 2 - 12 }}>
+            <IconButton
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: bar.height / 2,
+                left: card.width - iconPX * 1.5 - 4,
+                transform: 'translate3d(-50%, -50%, 0)',
+              }}
+            >
               <ArrowDownwardIcon
                 sx={{
                   transition: 'all 300ms 0s ease',
@@ -52,7 +76,15 @@ const FlowCard: React.FC<Props> = ({ entity, settings }) => {
                 fontSize="inherit"
               />
             </IconButton>
-            <IconButton size="small" sx={{ position: 'absolute', top: 6, left: card.width - iconPX - 6 }}>
+            <IconButton
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: bar.height / 2,
+                left: card.width - iconPX * 0.5 - 4,
+                transform: 'translate3d(-50%, -50%, 0)',
+              }}
+            >
               {open ? <ExpandLessIcon fontSize="inherit" /> : <ExpandMoreIcon fontSize="inherit" />}
             </IconButton>
           </Box>
