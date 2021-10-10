@@ -17,6 +17,5 @@ export type TreeSettings = {
   indent: number;
   m: number;
   card: Size;
-  bar: Size;
 };
 export type TreeRoot = { settings: TreeSettings; rootId?: UUID; focus?: UUID; dragging?: UUID };

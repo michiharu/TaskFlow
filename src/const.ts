@@ -8,6 +8,6 @@ export const treeSettings: TreeSettings = {
   indent: 2,
   m: 40,
   card: { width: 240, height: 120 },
-  bar: { width: 240, height: 28 },
 };
-export const iconPX = 26;
+
+export const cardActionBarHeight = 28;
