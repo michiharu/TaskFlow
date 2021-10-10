@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as Konva from 'konva';
 import { Group, Rect } from 'react-konva';
 
+import { cardActionBarHeight } from '../const';
 import { FlowEntity, TreeSettings } from '../types/tree-node';
 
 import FlowCardActionBar from './FlowCardActionBar';
@@ -14,7 +15,7 @@ type Props = {
 
 const FlowCard: React.FC<Props> = ({ entity, settings }) => {
   const { point, tree } = entity;
-  const { card, bar } = settings;
+  const { card } = settings;
   const rootRef = React.useRef<Konva.default.Group>(null);
   const cardRef = React.useRef<Konva.default.Rect>(null);
   if (!point || !tree) return null;
@@ -23,7 +24,7 @@ const FlowCard: React.FC<Props> = ({ entity, settings }) => {
     <Group ref={rootRef} {...point}>
       <Rect ref={cardRef} {...tree} fill="#00aaff08" />
       <Rect {...card} fill="#2348" />
-      <Rect {...bar} fill="#6666" />
+      <Rect width={card.width} height={cardActionBarHeight} fill="#6666" />
       <FlowCardActionBar entity={entity} settings={settings} />
     </Group>
   );

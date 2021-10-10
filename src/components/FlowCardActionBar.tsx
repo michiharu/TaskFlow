@@ -13,9 +13,11 @@ import {
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 
-import { iconPX } from '../const';
+import { cardActionBarHeight } from '../const';
 import { cardTheme } from '../theme';
 import { FlowEntity, TreeSettings } from '../types/tree-node';
+
+const iconArea = 26;
 
 type Props = {
   entity: FlowEntity;
@@ -24,9 +26,13 @@ type Props = {
 
 const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
   const { open, direction } = entity;
-  const { bar } = settings;
+  const { card } = settings;
 
-  const buttonSx: SxProps = { position: 'absolute', top: bar.height / 2, transform: 'translate3d(-50%, -50%, 0)' };
+  const buttonSx: SxProps = {
+    position: 'absolute',
+    top: cardActionBarHeight / 2,
+    transform: 'translate3d(-50%, -50%, 0)',
+  };
   const transition = 'all 300ms 0s ease';
   const directionTransform = direction === 'horizontal' ? 'rotate(-90deg)' : undefined;
 
@@ -34,16 +40,16 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
     <Html>
       <ThemeProvider theme={cardTheme}>
         <Box sx={{ width: 0, height: 0, position: 'relative' }}>
-          <IconButton size="small" sx={{ ...buttonSx, left: iconPX * 0.5 + 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: iconArea * 0.5 + 4 }}>
             <CloseIcon fontSize="inherit" />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: bar.width - iconPX * 2.5 - 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 2.5 - 4 }}>
             <AddIcon fontSize="inherit" />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: bar.width - iconPX * 1.5 - 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 1.5 - 4 }}>
             <ArrowDownwardIcon fontSize="inherit" sx={{ transition, transform: directionTransform }} />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: bar.width - iconPX * 0.5 - 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 0.5 - 4 }}>
             {open ? <ExpandLessIcon fontSize="inherit" /> : <ExpandMoreIcon fontSize="inherit" />}
           </IconButton>
         </Box>
