@@ -18,6 +18,7 @@ import { cardTheme } from '../theme';
 import { FlowEntity, TreeSettings } from '../types/tree-node';
 
 const iconArea = 26;
+const mx = 4;
 
 type Props = {
   entity: FlowEntity;
@@ -40,16 +41,16 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
     <Html>
       <ThemeProvider theme={cardTheme}>
         <Box sx={{ width: 0, height: 0, position: 'relative' }}>
-          <IconButton size="small" sx={{ ...buttonSx, left: iconArea * 0.5 + 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: iconArea * 0.5 + mx }}>
             <CloseIcon fontSize="inherit" />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 2.5 - 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 2.5 - mx }}>
             <AddIcon fontSize="inherit" />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 1.5 - 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 1.5 - mx }}>
             <ArrowDownwardIcon fontSize="inherit" sx={{ transition, transform: directionTransform }} />
           </IconButton>
-          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 0.5 - 4 }}>
+          <IconButton size="small" sx={{ ...buttonSx, left: card.width - iconArea * 0.5 - mx }}>
             {open ? <ExpandLessIcon fontSize="inherit" /> : <ExpandMoreIcon fontSize="inherit" />}
           </IconButton>
         </Box>
