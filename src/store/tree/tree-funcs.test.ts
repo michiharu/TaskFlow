@@ -2,7 +2,7 @@ import { treeSettings as settings } from '../../const';
 import { Point, Size } from '../../types';
 import { FlowEntity, FlowNode } from '../../types/tree-node';
 
-import { entityToTree, nodeToEntities, setPoint, setRect, setSize } from './tree-funcs';
+import { entityToTree, nodeToEntities, setPoint, setRect, setTreeSize } from './tree-funcs';
 import { TreeEntityState } from './tree-slice';
 import {
   rootOnlyEntities,
@@ -14,11 +14,11 @@ import {
   rootId,
 } from './tree-test-data';
 
-const { body, indent, m } = settings;
+const { card, indent, m } = settings;
 
 const noChildOpenTree: Size = {
-  width: indent * m + body.width,
-  height: body.height + m,
+  width: indent * m + card.width,
+  height: card.height + m,
 };
 
 test('entityToTree throw error', () => {
@@ -32,9 +32,9 @@ describe('root only', () => {
   test('entityToTree', () => {
     expect(entityToTree(root.id, entities)).toEqual(node);
   });
-  const nodeWithSize: FlowNode = { ...node, size: { body, tree: noChildOpenTree } };
+  const nodeWithSize: FlowNode = { ...node, tree: noChildOpenTree };
   test('setSize', () => {
-    expect(setSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const point: Point = { x: 0, y: 0 };
@@ -57,31 +57,31 @@ describe('flat entities', () => {
   test('entityToTree', () => {
     expect(entityToTree(root.id, entities)).toEqual(node);
   });
-  const rootTree: Size = { width: indent * m * 2 + body.width + m, height: body.height * 4 + m * 7 };
+  const rootTree: Size = { width: indent * m * 2 + card.width + m, height: card.height * 4 + m * 7 };
   const nodeWithSize: FlowNode = {
     ...node,
-    size: { body: settings.body, tree: rootTree },
+    tree: rootTree,
     children: [
-      { ...child1, size: { body, tree: noChildOpenTree }, children: [] },
-      { ...child2, size: { body, tree: noChildOpenTree }, children: [] },
-      { ...child3, size: { body, tree: noChildOpenTree }, children: [] },
+      { ...child1, tree: noChildOpenTree, children: [] },
+      { ...child2, tree: noChildOpenTree, children: [] },
+      { ...child3, tree: noChildOpenTree, children: [] },
     ],
   };
   test('setSize', () => {
-    expect(setSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
-    const child1Point: Point = { x: indent * m, y: body.height + m };
-    const child2Point: Point = { x: indent * m, y: body.height * 2 + m * 3 };
-    const child3Point: Point = { x: indent * m, y: body.height * 3 + m * 5 };
+    const child1Point: Point = { x: indent * m, y: card.height + m };
+    const child2Point: Point = { x: indent * m, y: card.height * 2 + m * 3 };
+    const child3Point: Point = { x: indent * m, y: card.height * 3 + m * 5 };
     const resultWithPoint: FlowNode = {
       ...nodeWithSize,
       point: rootPoint,
       children: [
-        { ...child1, size: { body, tree: noChildOpenTree }, point: child1Point, children: [] },
-        { ...child2, size: { body, tree: noChildOpenTree }, point: child2Point, children: [] },
-        { ...child3, size: { body, tree: noChildOpenTree }, point: child3Point, children: [] },
+        { ...child1, tree: noChildOpenTree, point: child1Point, children: [] },
+        { ...child2, tree: noChildOpenTree, point: child2Point, children: [] },
+        { ...child3, tree: noChildOpenTree, point: child3Point, children: [] },
       ],
     };
     expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
@@ -98,24 +98,24 @@ describe('nested entities', () => {
   test('entityToTree', () => {
     expect(entityToTree(root.id, entities)).toEqual(node);
   });
-  const rootTree: Size = { width: indent * m * 4 + body.width + m * 3, height: body.height * 4 + m * 7 };
-  const child1Tree: Size = { width: indent * m * 3 + body.width + m * 2, height: body.height * 3 + m * 5 };
-  const child2Tree: Size = { width: indent * m * 2 + body.width + m, height: body.height * 2 + m * 3 };
+  const rootTree: Size = { width: indent * m * 4 + card.width + m * 3, height: card.height * 4 + m * 7 };
+  const child1Tree: Size = { width: indent * m * 3 + card.width + m * 2, height: card.height * 3 + m * 5 };
+  const child2Tree: Size = { width: indent * m * 2 + card.width + m, height: card.height * 2 + m * 3 };
   const nodeWithSize: FlowNode = {
     ...node,
-    size: { body: settings.body, tree: rootTree },
+    tree: rootTree,
     children: [
       {
         ...child1,
-        size: { body, tree: child1Tree },
+        tree: child1Tree,
         children: [
           {
             ...child2,
-            size: { body, tree: child2Tree },
+            tree: child2Tree,
             children: [
               {
                 ...child3,
-                size: { body, tree: noChildOpenTree },
+                tree: noChildOpenTree,
                 children: [],
               },
             ],
@@ -125,30 +125,30 @@ describe('nested entities', () => {
     ],
   };
   test('setSize', () => {
-    expect(setSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
-    const child1Point: Point = { x: indent * m, y: body.height + m };
-    const child2Point: Point = { x: indent * m * 2, y: body.height * 2 + m * 2 };
-    const child3Point: Point = { x: indent * m * 3, y: body.height * 3 + m * 3 };
+    const child1Point: Point = { x: indent * m, y: card.height + m };
+    const child2Point: Point = { x: indent * m * 2, y: card.height * 2 + m * 2 };
+    const child3Point: Point = { x: indent * m * 3, y: card.height * 3 + m * 3 };
     const resultWithPoint: FlowNode = {
       ...nodeWithSize,
       point: rootPoint,
       children: [
         {
           ...child1,
-          size: { body, tree: child1Tree },
+          tree: child1Tree,
           point: child1Point,
           children: [
             {
               ...child2,
-              size: { body, tree: child2Tree },
+              tree: child2Tree,
               point: child2Point,
               children: [
                 {
                   ...child3,
-                  size: { body, tree: noChildOpenTree },
+                  tree: noChildOpenTree,
                   point: child3Point,
                   children: [],
                 },
@@ -177,30 +177,30 @@ describe('closed entities', () => {
   });
 
   const rootTree: Size = {
-    width: indent * m * 1 + body.width + m,
-    height: body.height * 3 + m * 3,
+    width: indent * m * 1 + card.width + m,
+    height: card.height * 3 + m * 3,
   };
   const nodeWithSize: FlowNode = {
     ...node,
-    size: { body: settings.body, tree: rootTree },
+    tree: rootTree,
     children: [
-      { ...child1, size: { body, tree: body }, children: [{ ...child2, children: [] }] },
-      { ...child3, size: { body, tree: body }, children: [] },
+      { ...child1, tree: card, children: [{ ...child2, children: [] }] },
+      { ...child3, tree: card, children: [] },
     ],
   };
   test('setSize', () => {
-    expect(setSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
-    const child1Point: Point = { x: indent * m, y: body.height + m };
-    const child3Point: Point = { x: indent * m, y: body.height * 2 + m * 2 };
+    const child1Point: Point = { x: indent * m, y: card.height + m };
+    const child3Point: Point = { x: indent * m, y: card.height * 2 + m * 2 };
     const resultWithPoint: FlowNode = {
       ...nodeWithSize,
       point: rootPoint,
       children: [
-        { ...child1, size: { body, tree: body }, point: child1Point, children: [{ ...child2, children: [] }] },
-        { ...child3, size: { body, tree: body }, point: child3Point, children: [] },
+        { ...child1, tree: card, point: child1Point, children: [{ ...child2, children: [] }] },
+        { ...child3, tree: card, point: child3Point, children: [] },
       ],
     };
     expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
@@ -221,29 +221,25 @@ describe('horizontal entities', () => {
     expect(entityToTree(root.id, entities)).toEqual(node);
   });
 
-  const rootTree: Size = { width: body.width * 4 + indent * m + m * 6, height: body.height * 3 + m * 3 };
-  const child1Tree: Size = { width: body.width * 2 + indent * m + m * 2, height: body.height * 2 + m * 2 };
-  const child3Tree: Size = { width: body.width + m, height: body.height + indent * m };
+  const rootTree: Size = { width: card.width * 4 + indent * m + m * 6, height: card.height + indent * m * 2 + m * 3 };
+  const child1Tree: Size = { width: card.width * 2 + indent * m + m * 2, height: card.height + indent * m + m * 2 };
+  const child3Tree: Size = { width: card.width + m, height: card.height + indent * m };
   const nodeWithSize: FlowNode = {
     ...node,
-    size: { body: settings.body, tree: rootTree },
+    tree: rootTree,
     children: [
-      {
-        ...child1,
-        size: { body, tree: child1Tree },
-        children: [{ ...child2, size: { body, tree: noChildOpenTree }, children: [] }],
-      },
-      { ...child3, size: { body, tree: child3Tree }, children: [] },
+      { ...child1, tree: child1Tree, children: [{ ...child2, tree: noChildOpenTree, children: [] }] },
+      { ...child3, tree: child3Tree, children: [] },
     ],
   };
   test('setSize', () => {
-    expect(setSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
-    const child1Point: Point = { x: body.width + m, y: indent * m };
-    const child2Point: Point = { x: body.width * 2 + m * 2, y: indent * m * 2 };
-    const child3Point: Point = { x: body.width * 3 + indent * m + m * 4, y: indent * m };
+    const child1Point: Point = { x: card.width + m, y: indent * m };
+    const child2Point: Point = { x: card.width * 2 + m * 2, y: indent * m * 2 };
+    const child3Point: Point = { x: card.width * 3 + indent * m + m * 4, y: indent * m };
 
     const resultWithPoint: FlowNode = {
       ...nodeWithSize,
@@ -251,11 +247,11 @@ describe('horizontal entities', () => {
       children: [
         {
           ...child1,
-          size: { body, tree: child1Tree },
+          tree: child1Tree,
           point: child1Point,
-          children: [{ ...child2, size: { body, tree: noChildOpenTree }, point: child2Point, children: [] }],
+          children: [{ ...child2, tree: noChildOpenTree, point: child2Point, children: [] }],
         },
-        { ...child3, size: { body, tree: child3Tree }, point: child3Point, children: [] },
+        { ...child3, tree: child3Tree, point: child3Point, children: [] },
       ],
     };
     expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
@@ -272,27 +268,25 @@ describe('nested closed entities', () => {
   test('entityToTree', () => {
     expect(entityToTree(root.id, entities)).toEqual(node);
   });
-  const rootTree: Size = { width: indent * m + body.width + m, height: body.height * 2 + m * 2 };
+  const rootTree: Size = { width: indent * m + card.width + m, height: card.height * 2 + m * 2 };
   const nodeWithSize: FlowNode = {
     ...node,
-    size: { body: settings.body, tree: rootTree },
-    children: [
-      { ...child1, size: { body, tree: body }, children: [{ ...child2, children: [{ ...child3, children: [] }] }] },
-    ],
+    tree: rootTree,
+    children: [{ ...child1, tree: card, children: [{ ...child2, children: [{ ...child3, children: [] }] }] }],
   };
   test('setSize', () => {
-    expect(setSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
-    const child1Point: Point = { x: indent * m, y: body.height + m };
+    const child1Point: Point = { x: indent * m, y: card.height + m };
     const resultWithPoint: FlowNode = {
       ...nodeWithSize,
       point: rootPoint,
       children: [
         {
           ...child1,
-          size: { body, tree: body },
+          tree: card,
           point: child1Point,
           children: [{ ...child2, children: [{ ...child3, children: [] }] }],
         },
@@ -305,25 +299,25 @@ describe('nested closed entities', () => {
 test('nodeToEntities', () => {
   const { root, child1, child2, child3 } = closedEntities;
 
-  const rootTree: Size = { width: indent * m * 1 + body.width + m, height: body.height * 3 + m * 3 };
+  const rootTree: Size = { width: indent * m * 1 + card.width + m, height: card.height * 3 + m * 3 };
   const rootPoint: Point = { x: 0, y: 0 };
-  const child1Point: Point = { x: indent * m, y: body.height + m };
-  const child3Point: Point = { x: indent * m, y: body.height * 2 + m * 2 };
+  const child1Point: Point = { x: indent * m, y: card.height + m };
+  const child3Point: Point = { x: indent * m, y: card.height * 2 + m * 2 };
 
   const node: FlowNode = {
     ...root,
-    size: { body: settings.body, tree: rootTree },
+    tree: rootTree,
     point: rootPoint,
     children: [
-      { ...child1, size: { body, tree: body }, point: child1Point, children: [{ ...child2, children: [] }] },
-      { ...child3, size: { body, tree: body }, point: child3Point, children: [] },
+      { ...child1, tree: card, point: child1Point, children: [{ ...child2, children: [] }] },
+      { ...child3, tree: card, point: child3Point, children: [] },
     ],
   };
   expect(nodeToEntities(node)).toEqual([
-    { ...root, size: { body: settings.body, tree: rootTree }, point: rootPoint },
-    { ...child1, size: { body, tree: body }, point: child1Point },
+    { ...root, tree: rootTree, point: rootPoint },
+    { ...child1, tree: card, point: child1Point },
     { ...child2 },
-    { ...child3, size: { body, tree: body }, point: child3Point },
+    { ...child3, tree: card, point: child3Point },
   ]);
 });
 
@@ -335,15 +329,15 @@ describe('setRect', () => {
     rootId: root.id,
     settings: { ...settings, stagePadding: 0 },
   };
-  const rootTree: Size = { width: indent * m * 1 + body.width + m, height: body.height * 3 + m * 3 };
+  const rootTree: Size = { width: indent * m * 1 + card.width + m, height: card.height * 3 + m * 3 };
   const rootPoint: Point = { x: 0, y: 0 };
-  const child1Point: Point = { x: indent * m, y: body.height + m };
-  const child3Point: Point = { x: indent * m, y: body.height * 2 + m * 2 };
+  const child1Point: Point = { x: indent * m, y: card.height + m };
+  const child3Point: Point = { x: indent * m, y: card.height * 2 + m * 2 };
   const entities: FlowEntity[] = [
-    { ...root, index: 0, size: { body: settings.body, tree: rootTree }, point: rootPoint },
-    { ...child1, index: 1, size: { body, tree: body }, point: child1Point },
+    { ...root, index: 0, tree: rootTree, point: rootPoint },
+    { ...child1, index: 1, tree: card, point: child1Point },
     { ...child2, index: 2 },
-    { ...child3, index: 3, size: { body, tree: body }, point: child3Point },
+    { ...child3, index: 3, tree: card, point: child3Point },
   ];
   test('', () => {
     expect(setRect(state)).toEqual(entities);
