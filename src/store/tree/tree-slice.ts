@@ -5,7 +5,7 @@ import { FlowEntity, TreeRoot } from '../../types/tree-node';
 import { RootState } from '../setup-store';
 
 import { setRect } from './tree-funcs';
-import { nestedClosedEntities } from './tree-test-data';
+import { horizontalEntities } from './tree-test-data';
 
 const adapter = createEntityAdapter<FlowEntity>({ sortComparer: (a, b) => a.index - b.index });
 const initialState = adapter.getInitialState<TreeRoot>({ settings });
@@ -21,7 +21,7 @@ export const treeSlice = createSlice({
       state.focus = undefined;
       state.dragging = undefined;
 
-      const { root, child1, child2, child3 } = nestedClosedEntities;
+      const { root, child1, child2, child3 } = horizontalEntities;
       state.rootId = root.id;
       adapter.setAll(state, [root, child1, child2, child3]);
 

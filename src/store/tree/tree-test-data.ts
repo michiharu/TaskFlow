@@ -37,7 +37,7 @@ export const horizontalEntities: Entities = {
   root: entityFactory(rootId, [childId1, childId3], { type: 'root', direction: 'horizontal' }),
   child1: entityFactory(childId1, [childId2], { direction: 'horizontal' }),
   child2: entityFactory(childId2),
-  child3: entityFactory(childId3),
+  child3: entityFactory(childId3, [], { direction: 'horizontal' }),
 };
 
 export const nestedClosedEntities: Entities = {
