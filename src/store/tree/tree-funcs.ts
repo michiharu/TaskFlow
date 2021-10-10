@@ -6,25 +6,18 @@ import { FlowEntity, FlowNode, TreeSettings } from '../../types/tree-node';
 
 import { TreeEntityState } from './tree-slice';
 
-export const rootFactory = (id: UUID, childIds: UUID[], primary: string): FlowEntity => ({
-  id,
-  index: 0,
-  childIds,
-  type: 'root',
-  direction: 'vertical',
-  open: true,
-  text: { primary, secondary: '' },
-});
+type FactoryOptions = Partial<Omit<FlowEntity, 'id' | 'childIds'>>;
 
-export const taskFactory = (id: UUID, childIds: UUID[], primary: string): FlowEntity => ({
-  id,
-  index: 0,
-  childIds,
-  type: 'task',
-  direction: 'vertical',
-  open: true,
-  text: { primary, secondary: '' },
-});
+export const entityFactory = (id: UUID, childIds: UUID[] = [], options: FactoryOptions = {}): FlowEntity => {
+  const {
+    index = 0,
+    type = 'task',
+    direction = 'vertical',
+    open = true,
+    text = { primary: '', secondary: '' },
+  } = options;
+  return { id, childIds, index, type, direction, open, text };
+};
 
 export const entityToTree = (id: UUID, entities: Dictionary<FlowEntity>): FlowNode => {
   const entity = entities[id];
@@ -45,12 +38,13 @@ export const setSize = (node: FlowNode, settings: TreeSettings, visible: boolean
     return { ...node, size, children };
   }
   if (node.children.length === 0) {
-    const tree: Size = {
-      width: direction === 'vertical' ? indent * m + body.width : body.width + m,
-      height: direction === 'vertical' ? body.height + m : indent * m + body.height,
-    };
-    const size = { body, tree };
-    return { ...node, size };
+    if (direction === 'vertical') {
+      const tree: Size = { width: indent * m + body.width, height: body.height + m };
+      return { ...node, size: { body, tree } };
+    } else {
+      const tree: Size = { width: body.width + m, height: indent * m + body.height };
+      return { ...node, size: { body, tree } };
+    }
   }
   if (direction === 'vertical') {
     const children = node.children.map((c) => setSize(c, settings, true));

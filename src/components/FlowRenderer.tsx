@@ -20,7 +20,7 @@ type StateProps = {
 const FlowRenderer: React.FC<StateProps> = ({ rootEntity, entities, stagePadding }) => {
   const { size } = rootEntity;
   if (!size) throw new Error();
-  const stageSize: Size = { width: size.tree.width + stagePadding, height: size.tree.height + stagePadding };
+  const stageSize: Size = { width: size.tree.width + stagePadding * 2, height: size.tree.height + stagePadding * 2 };
   return (
     <FlexibleStage stageSize={stageSize}>
       <Layer>
