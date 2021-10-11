@@ -17,14 +17,14 @@ import {
 import { cardActionBarHeight as barHeight } from '../const';
 import { treeSlice } from '../store/tree/tree-slice';
 import { cardTheme } from '../theme';
-import { FlowEntity, TreeSettings } from '../types/tree-node';
+import { FlowEntity, EntitySettings } from '../types/tree-node';
 
 const iconArea = 26;
 const mx = 4;
 
 type Props = {
   entity: FlowEntity;
-  settings: TreeSettings;
+  settings: EntitySettings;
 };
 
 const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {

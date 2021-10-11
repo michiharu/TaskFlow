@@ -3,14 +3,14 @@ import { createEntityAdapter, createSlice, Update, PayloadAction as PA } from '@
 import { treeSettings as settings } from '../../const';
 import { uuid4 } from '../../funcs/utils';
 import { UUID } from '../../types';
-import { FlowEntity, TreeRoot } from '../../types/tree-node';
+import { FlowEntity, RootEntityState } from '../../types/tree-node';
 import { RootState } from '../setup-store';
 
 import { entityFactory, setRect } from './tree-funcs';
 import { horizontalEntities } from './tree-test-data';
 
 const adapter = createEntityAdapter<FlowEntity>({ sortComparer: (a, b) => a.index - b.index });
-const initialState = adapter.getInitialState<TreeRoot>({ settings });
+const initialState = adapter.getInitialState<RootEntityState>({ settings });
 export type TreeEntityState = typeof initialState;
 
 export const treeSlice = createSlice({
