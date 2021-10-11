@@ -15,16 +15,16 @@ import {
 } from '@mui/icons-material';
 
 import { cardActionBarHeight as barHeight } from '../const';
-import { flowEntitySlice } from '../store/flow-entity/slice';
+import { entitySlice } from '../store/flow-entity/slice';
 import { cardTheme } from '../theme';
-import { FlowEntity, EntitySettings } from '../types/flow-entity';
+import { FlowEntity, FlowEntitySettings } from '../types/flow-entity';
 
 const iconArea = 26;
 const mx = 4;
 
 type Props = {
   entity: FlowEntity;
-  settings: EntitySettings;
+  settings: FlowEntitySettings;
 };
 
 const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
@@ -42,7 +42,7 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
     sx: { ...buttonSx, left: card.width - iconArea * 1.5 - mx },
     onClick: () => {
       const next = direction !== 'vertical' ? 'vertical' : 'horizontal';
-      dispatch(flowEntitySlice.actions.update({ id, changes: { direction: next } }));
+      dispatch(entitySlice.actions.update({ id, changes: { direction: next } }));
     },
   };
   const directionIconButton = (
@@ -53,7 +53,7 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
   const openCloseIconButtonProps: IconButtonProps = {
     size: 'small',
     sx: { ...buttonSx, left: card.width - iconArea * 0.5 - mx },
-    onClick: () => dispatch(flowEntitySlice.actions.update({ id, changes: { open: !open } })),
+    onClick: () => dispatch(entitySlice.actions.update({ id, changes: { open: !open } })),
   };
   const openCloseIconButton = (
     <IconButton {...openCloseIconButtonProps}>
@@ -68,7 +68,7 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
       left: direction === 'vertical' ? indent * m + card.width / 2 : card.width + m / 2,
       transform: 'translate3d(-50%, -50%, 0)',
     },
-    onClick: () => dispatch(flowEntitySlice.actions.addChild(id)),
+    onClick: () => dispatch(entitySlice.actions.addChild(id)),
   };
   const addChildIconButton = open && (
     <IconButton {...addChildIconButtonProps}>
@@ -94,7 +94,7 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
   const closeIconButtonProps: IconButtonProps = {
     size: 'small',
     sx: { ...buttonSx, left: iconArea * 0.5 + mx },
-    onClick: () => dispatch(flowEntitySlice.actions.delete({ parentId: parent.id, targetId: id })),
+    onClick: () => dispatch(entitySlice.actions.delete({ parentId: parent.id, targetId: id })),
   };
   const closeIconButton = (
     <IconButton {...closeIconButtonProps}>
@@ -109,7 +109,7 @@ const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
       left: parent.direction === 'vertical' ? card.width / 2 : tree.width + m / 2,
       transform: 'translate3d(-50%, -50%, 0)',
     },
-    onClick: () => dispatch(flowEntitySlice.actions.addNext({ parentId: parent.id, targetId: id })),
+    onClick: () => dispatch(entitySlice.actions.addNext({ parentId: parent.id, targetId: id })),
   };
   const addNextIconButton = (
     <IconButton {...addNextIconButtonProps}>

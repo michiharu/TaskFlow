@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Layer } from 'react-konva';
 import { ReactReduxContext, Provider, connect } from 'react-redux';
 
-import { flowEntitySelectors } from '../store/flow-entity/slice';
+import { entitySelectors } from '../store/flow-entity/slice';
 import { RootState } from '../store/setup-store';
 import { Size } from '../types';
-import { FlowEntity, EntitySettings } from '../types/flow-entity';
+import { FlowEntity, FlowEntitySettings } from '../types/flow-entity';
 
 import FlexibleStage from './FlexibleStage';
 import FlowCard from './FlowCard';
@@ -14,7 +14,7 @@ import FlowCard from './FlowCard';
 type StateProps = {
   stageSize: Size;
   entities: FlowEntity[];
-  settings: EntitySettings;
+  settings: FlowEntitySettings;
 };
 
 const FlowRenderer: React.FC<StateProps> = ({ stageSize, entities, settings }) => {
@@ -36,15 +36,15 @@ const FlowRenderer: React.FC<StateProps> = ({ stageSize, entities, settings }) =
 };
 
 const mapStateToProps = (state: RootState): StateProps => {
-  const { rootId, settings } = state.flowEntity;
+  const { rootId, settings } = state.entity;
   if (!rootId) throw new Error();
-  const root = state.flowEntity.entities[rootId];
+  const root = state.entity.entities[rootId];
   if (!root) throw new Error();
   const { tree } = root;
   if (!tree) throw new Error();
   const { stagePadding } = settings;
   const stageSize: Size = { width: tree.width + stagePadding * 2, height: tree.height + stagePadding * 2 };
-  const entities = flowEntitySelectors.selectAll(state);
+  const entities = entitySelectors.selectAll(state);
   return { stageSize, entities, settings };
 };
 
