@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 
-import { flowEntitySlice } from './flow-entity/slice';
+import { entitySlice } from './flow-entity/slice';
+import { treeSlice } from './flow-tree/slice';
 import { rootSaga } from './root-saga';
 
 export const rootReducer = combineReducers({
-  flowEntity: flowEntitySlice.reducer,
+  tree: treeSlice.reducer,
+  entity: entitySlice.reducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
