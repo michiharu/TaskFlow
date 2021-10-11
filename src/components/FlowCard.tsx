@@ -4,7 +4,7 @@ import * as Konva from 'konva';
 import { Group, Rect } from 'react-konva';
 
 import { cardActionBarHeight } from '../const';
-import { FlowEntity, EntitySettings } from '../types/tree-node';
+import { FlowEntity, EntitySettings } from '../types/flow-entity';
 
 import FlowCardActionBar from './FlowCardActionBar';
 

@@ -1,7 +1,7 @@
 import { UUID } from '../../types';
-import { FlowEntity } from '../../types/tree-node';
+import { FlowEntity } from '../../types/flow-entity';
 
-import { entityFactory } from './tree-funcs';
+import { entityFactory } from './funcs';
 
 export const rootId = '12345678-9abc-4def-9000-000000000000' as UUID;
 const childId1 = '12345678-9abc-4def-9000-000000000001' as UUID;

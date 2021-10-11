@@ -1,9 +1,9 @@
 import { Breakpoint } from '@mui/system';
 
-import { EntitySettings } from './types/tree-node';
+import { EntitySettings } from './types/flow-entity';
 
 export const containerMaxWidth: Breakpoint = 'xl';
-export const treeSettings: EntitySettings = {
+export const entitySettings: EntitySettings = {
   stagePadding: 20,
   indent: 2,
   m: 40,
