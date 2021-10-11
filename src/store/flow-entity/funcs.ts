@@ -2,9 +2,9 @@
 import { Dictionary } from '@reduxjs/toolkit';
 
 import { Point, Size, UUID } from '../../types';
-import { FlowEntity, FlowNode, EntitySettings } from '../../types/tree-node';
+import { FlowEntity, FlowNode, EntitySettings } from '../../types/flow-entity';
 
-import { TreeEntityState } from './tree-slice';
+import { FlowEntitySliceState } from './slice';
 
 type FactoryOptions = Partial<Omit<FlowEntity, 'id' | 'childIds'>>;
 
@@ -90,7 +90,7 @@ export const nodeToEntities = (node: FlowNode): FlowEntity[] => {
   );
 };
 
-export const setRect = (state: TreeEntityState): FlowEntity[] => {
+export const setRect = (state: FlowEntitySliceState): FlowEntity[] => {
   const { rootId, entities, settings } = state;
   if (!rootId || !entities[rootId]) throw new Error();
   let root = entityToTree(rootId, entities);

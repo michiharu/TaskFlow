@@ -1,9 +1,7 @@
-import { treeSettings as settings } from '../../const';
+import { entitySettings as settings } from '../../const';
 import { Point, Size } from '../../types';
-import { FlowEntity, FlowNode } from '../../types/tree-node';
+import { FlowEntity, FlowNode } from '../../types/flow-entity';
 
-import { entityToTree, nodeToEntities, setPoint, setRect, setTreeSize } from './tree-funcs';
-import { TreeEntityState } from './tree-slice';
 import {
   rootOnlyEntities,
   flatEntities,
@@ -12,7 +10,9 @@ import {
   horizontalEntities,
   nestedClosedEntities,
   rootId,
-} from './tree-test-data';
+} from './data.test';
+import { entityToTree, nodeToEntities, setPoint, setRect, setTreeSize } from './funcs';
+import { FlowEntitySliceState } from './slice';
 
 const { card, indent, m } = settings;
 
@@ -323,7 +323,7 @@ test('nodeToEntities', () => {
 
 describe('setRect', () => {
   const { root, child1, child2, child3 } = closedEntities;
-  const state: TreeEntityState = {
+  const state: FlowEntitySliceState = {
     ids: [root.id, child1.id, child2.id, child3.id],
     entities: { [root.id]: root, [child1.id]: child1, [child2.id]: child2, [child3.id]: child3 },
     rootId: root.id,

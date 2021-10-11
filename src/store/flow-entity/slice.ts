@@ -1,20 +1,20 @@
 import { createEntityAdapter, createSlice, Update, PayloadAction as PA } from '@reduxjs/toolkit';
 
-import { treeSettings as settings } from '../../const';
+import { entitySettings as settings } from '../../const';
 import { uuid4 } from '../../funcs/utils';
 import { UUID } from '../../types';
-import { FlowEntity, RootEntityState } from '../../types/tree-node';
+import { FlowEntity, RootEntityState } from '../../types/flow-entity';
 import { RootState } from '../setup-store';
 
-import { entityFactory, setRect } from './tree-funcs';
-import { horizontalEntities } from './tree-test-data';
+import { horizontalEntities } from './data.test';
+import { entityFactory, setRect } from './funcs';
 
 const adapter = createEntityAdapter<FlowEntity>({ sortComparer: (a, b) => a.index - b.index });
 const initialState = adapter.getInitialState<RootEntityState>({ settings });
-export type TreeEntityState = typeof initialState;
+export type FlowEntitySliceState = typeof initialState;
 
-export const treeSlice = createSlice({
-  name: 'tree',
+export const flowEntitySlice = createSlice({
+  name: 'flow-entity',
   initialState,
   reducers: {
     createTestTree(state) {
@@ -70,6 +70,6 @@ export const treeSlice = createSlice({
   },
 });
 
-export default { treeSlice };
+export default { flowEntitySlice };
 
-export const treeSelectors = adapter.getSelectors<RootState>((state) => state.tree);
+export const flowEntitySelectors = adapter.getSelectors<RootState>((state) => state.flowEntity);
