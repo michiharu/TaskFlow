@@ -85,7 +85,9 @@ export const setPoint = (node: FlowNode, settings: TreeSettings, visible: boolea
 
 export const nodeToEntities = (node: FlowNode): FlowEntity[] => {
   const { children, ...parent } = node;
-  return [parent].concat(children.flatMap((child) => nodeToEntities(child)));
+  return [parent].concat(
+    children.flatMap((child) => nodeToEntities({ ...child, parent: { id: parent.id, direction: parent.direction } }))
+  );
 };
 
 export const setRect = (state: TreeEntityState): FlowEntity[] => {
