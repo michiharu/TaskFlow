@@ -6,7 +6,7 @@ import { ReactReduxContext, Provider, connect } from 'react-redux';
 import { RootState } from '../store/setup-store';
 import { treeSelectors } from '../store/tree/tree-slice';
 import { Size } from '../types';
-import { FlowEntity, TreeSettings } from '../types/tree-node';
+import { FlowEntity, EntitySettings } from '../types/tree-node';
 
 import FlexibleStage from './FlexibleStage';
 import FlowCard from './FlowCard';
@@ -14,7 +14,7 @@ import FlowCard from './FlowCard';
 type StateProps = {
   stageSize: Size;
   entities: FlowEntity[];
-  settings: TreeSettings;
+  settings: EntitySettings;
 };
 
 const FlowRenderer: React.FC<StateProps> = ({ stageSize, entities, settings }) => {

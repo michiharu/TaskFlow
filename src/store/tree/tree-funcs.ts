@@ -2,7 +2,7 @@
 import { Dictionary } from '@reduxjs/toolkit';
 
 import { Point, Size, UUID } from '../../types';
-import { FlowEntity, FlowNode, TreeSettings } from '../../types/tree-node';
+import { FlowEntity, FlowNode, EntitySettings } from '../../types/tree-node';
 
 import { TreeEntityState } from './tree-slice';
 
@@ -25,7 +25,7 @@ export const entityToTree = (id: UUID, entities: Dictionary<FlowEntity>): FlowNo
   return { ...entity, children: entity.childIds.map((childId) => entityToTree(childId, entities)) };
 };
 
-export const setTreeSize = (node: FlowNode, settings: TreeSettings, visible: boolean): FlowNode => {
+export const setTreeSize = (node: FlowNode, settings: EntitySettings, visible: boolean): FlowNode => {
   const { direction } = node;
   const { card, indent, m } = settings;
   if (!visible) {
@@ -58,7 +58,7 @@ export const setTreeSize = (node: FlowNode, settings: TreeSettings, visible: boo
   }
 };
 
-export const setPoint = (node: FlowNode, settings: TreeSettings, visible: boolean, point: Point): FlowNode => {
+export const setPoint = (node: FlowNode, settings: EntitySettings, visible: boolean, point: Point): FlowNode => {
   const { direction } = node;
   const { card, indent, m } = settings;
   if (!visible) {
