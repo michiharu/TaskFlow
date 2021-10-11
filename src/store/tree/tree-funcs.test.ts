@@ -315,9 +315,9 @@ test('nodeToEntities', () => {
   };
   expect(nodeToEntities(node)).toEqual([
     { ...root, tree: rootTree, point: rootPoint },
-    { ...child1, tree: card, point: child1Point },
-    { ...child2 },
-    { ...child3, tree: card, point: child3Point },
+    { ...child1, tree: card, point: child1Point, parent: { id: root.id, direction: root.direction } },
+    { ...child2, parent: { id: child1.id, direction: child1.direction } },
+    { ...child3, tree: card, point: child3Point, parent: { id: root.id, direction: root.direction } },
   ]);
 });
 
@@ -335,9 +335,9 @@ describe('setRect', () => {
   const child3Point: Point = { x: indent * m, y: card.height * 2 + m * 2 };
   const entities: FlowEntity[] = [
     { ...root, index: 0, tree: rootTree, point: rootPoint },
-    { ...child1, index: 1, tree: card, point: child1Point },
-    { ...child2, index: 2 },
-    { ...child3, index: 3, tree: card, point: child3Point },
+    { ...child1, index: 1, tree: card, point: child1Point, parent: { id: root.id, direction: root.direction } },
+    { ...child2, index: 2, parent: { id: child1.id, direction: child1.direction } },
+    { ...child3, index: 3, tree: card, point: child3Point, parent: { id: root.id, direction: root.direction } },
   ];
   test('', () => {
     expect(setRect(state)).toEqual(entities);
