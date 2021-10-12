@@ -3,27 +3,27 @@ import { createEntityAdapter, createSlice, Update, PayloadAction as PA } from '@
 import { entitySettings as settings } from '../../const';
 import { uuid4 } from '../../funcs/utils';
 import { UUID } from '../../types';
-import { FlowEntity, RootEntityState } from '../../types/flow-entity';
-import { FlowTree } from '../../types/flow-tree';
+import { Flow } from '../../types/flow';
+import { FlowEntity, FlowRootState } from '../../types/flow-entity';
 import { RootState } from '../setup-store';
 
 import { entityFactory, setRect } from './funcs';
 
 const adapter = createEntityAdapter<FlowEntity>({ sortComparer: (a, b) => a.index - b.index });
-const initialState = adapter.getInitialState<RootEntityState>({ settings });
+const initialState = adapter.getInitialState<FlowRootState>({ settings });
 export type FlowEntitySliceState = typeof initialState;
 
 export const entitySlice = createSlice({
   name: 'flow-entity',
   initialState,
   reducers: {
-    setFlowTree(state, { payload: tree }: PA<FlowTree>) {
+    setFlow(state, { payload: flow }: PA<Flow>) {
       // reset state
       adapter.removeAll(state);
       state.focus = undefined;
       state.dragging = undefined;
 
-      const { id, entities } = tree;
+      const { id, entities } = flow;
       state.rootId = id;
       adapter.setAll(state, entities);
 

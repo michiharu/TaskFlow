@@ -2,11 +2,11 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 
 import { entitySlice } from './flow-entity/slice';
-import { treeSlice } from './flow-tree/slice';
+import { flowSlice } from './flow/slice';
 import { rootSaga } from './root-saga';
 
 export const rootReducer = combineReducers({
-  tree: treeSlice.reducer,
+  flow: flowSlice.reducer,
   entity: entitySlice.reducer,
 });
 
