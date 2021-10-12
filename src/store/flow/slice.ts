@@ -1,28 +1,28 @@
 import { createEntityAdapter, createSlice, PayloadAction as PA } from '@reduxjs/toolkit';
 
 import { uuid4 } from '../../funcs/utils';
-import { FlowTree, FlowTreeState } from '../../types/flow-tree';
+import { Flow, FlowState } from '../../types/flow';
 import { entityFactory } from '../flow-entity/funcs';
 import { RootState } from '../setup-store';
 
-const adapter = createEntityAdapter<FlowTree>();
-const initialState = adapter.getInitialState<FlowTreeState>({});
+const adapter = createEntityAdapter<Flow>();
+const initialState = adapter.getInitialState<FlowState>({});
 export type FlowTreeSliceState = typeof initialState;
 
-export const treeSlice = createSlice({
-  name: 'flow-tree',
+export const flowSlice = createSlice({
+  name: 'flow',
   initialState,
   reducers: {
     create(state, { payload: primary }: PA<string>) {
       const id = uuid4();
       const root = entityFactory(id, [], { type: 'root' });
       root.text.primary = primary;
-      const tree: FlowTree = { id: root.id, entities: [root] };
-      adapter.addOne(state, tree);
+      const flow: Flow = { id: root.id, entities: [root] };
+      adapter.addOne(state, flow);
     },
   },
 });
 
-export default { treeSlice };
+export default { flowSlice };
 
-export const treeSelectors = adapter.getSelectors<RootState>((state) => state.tree);
+export const flowSelectors = adapter.getSelectors<RootState>((state) => state.flow);
