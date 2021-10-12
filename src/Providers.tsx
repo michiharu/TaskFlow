@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 
 import { CssBaseline } from '@mui/material';
 
@@ -12,10 +13,12 @@ import { theme } from './theme';
 const Providers: React.FC = () => {
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <App />
+        </ThemeProvider>
+      </BrowserRouter>
     </Provider>
   );
 };

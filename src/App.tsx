@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Box, Container } from '@mui/material';
 
-import FlowRenderer from './components/FlowRenderer';
+import PageRouter from './components/PageRouter';
 import { containerMaxWidth } from './const';
 import AppHeader from './layouts/AppHeader';
 
@@ -12,7 +12,7 @@ const App: React.FC = () => {
       <AppHeader />
       <Container component="main" maxWidth={containerMaxWidth}>
         <Box sx={{ height: 'calc(100vh - 64px)', p: 1 }}>
-          <FlowRenderer />
+          <PageRouter />
         </Box>
       </Container>
     </>
