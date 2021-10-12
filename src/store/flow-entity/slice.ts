@@ -4,28 +4,28 @@ import { entitySettings as settings } from '../../const';
 import { uuid4 } from '../../funcs/utils';
 import { UUID } from '../../types';
 import { FlowEntity, RootEntityState } from '../../types/flow-entity';
+import { FlowTree } from '../../types/flow-tree';
 import { RootState } from '../setup-store';
 
-import { horizontalEntities } from './data.test';
 import { entityFactory, setRect } from './funcs';
 
 const adapter = createEntityAdapter<FlowEntity>({ sortComparer: (a, b) => a.index - b.index });
 const initialState = adapter.getInitialState<RootEntityState>({ settings });
 export type FlowEntitySliceState = typeof initialState;
 
-export const flowEntitySlice = createSlice({
+export const entitySlice = createSlice({
   name: 'flow-entity',
   initialState,
   reducers: {
-    createTestTree(state) {
+    setFlowTree(state, { payload: tree }: PA<FlowTree>) {
       // reset state
       adapter.removeAll(state);
       state.focus = undefined;
       state.dragging = undefined;
 
-      const { root, child1, child2, child3 } = horizontalEntities;
-      state.rootId = root.id;
-      adapter.setAll(state, [root, child1, child2, child3]);
+      const { id, entities } = tree;
+      state.rootId = id;
+      adapter.setAll(state, entities);
 
       const calculated = setRect(state);
       adapter.setAll(state, calculated);
@@ -70,6 +70,6 @@ export const flowEntitySlice = createSlice({
   },
 });
 
-export default { flowEntitySlice };
+export default { entitySlice };
 
-export const flowEntitySelectors = adapter.getSelectors<RootState>((state) => state.flowEntity);
+export const entitySelectors = adapter.getSelectors<RootState>((state) => state.entity);

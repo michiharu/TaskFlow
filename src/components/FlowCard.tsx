@@ -4,13 +4,13 @@ import * as Konva from 'konva';
 import { Group, Rect } from 'react-konva';
 
 import { cardActionBarHeight } from '../const';
-import { FlowEntity, EntitySettings } from '../types/flow-entity';
+import { FlowEntity, FlowEntitySettings } from '../types/flow-entity';
 
 import FlowCardActionBar from './FlowCardActionBar';
 
 type Props = {
   entity: FlowEntity;
-  settings: EntitySettings;
+  settings: FlowEntitySettings;
 };
 
 const FlowCard: React.FC<Props> = ({ entity, settings }) => {

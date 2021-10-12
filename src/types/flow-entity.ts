@@ -12,5 +12,5 @@ type RectAttributes = { tree?: Size; point?: Point };
 type Parent = { id: UUID; direction: Direction };
 export type FlowEntity = BaseEntity & EntityState & RectAttributes & { parent?: Parent };
 export type FlowNode = FlowEntity & { children: FlowNode[] };
-export type EntitySettings = { stagePadding: number; indent: number; m: number; card: Size };
-export type RootEntityState = { settings: EntitySettings; rootId?: UUID; focus?: UUID; dragging?: UUID };
+export type FlowEntitySettings = { stagePadding: number; indent: number; m: number; card: Size };
+export type RootEntityState = { settings: FlowEntitySettings; rootId?: UUID; focus?: UUID; dragging?: UUID };
