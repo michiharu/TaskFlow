@@ -13,11 +13,10 @@ export const flowSlice = createSlice({
   name: 'flow',
   initialState,
   reducers: {
-    create(state, { payload: primary }: PA<string>) {
+    create(state, { payload: title }: PA<string>) {
       const id = uuid4();
       const root = entityFactory(id, [], { type: 'root' });
-      root.text.primary = primary;
-      const flow: Flow = { id: root.id, entities: [root] };
+      const flow: Flow = { id: root.id, title, entities: [root] };
       adapter.addOne(state, flow);
     },
   },
