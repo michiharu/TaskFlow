@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { render } from 'react-dom';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
@@ -23,4 +24,4 @@ const Providers: React.FC = () => {
   );
 };
 
-export default Providers;
+render(<Providers />, document.querySelector('#root'));
