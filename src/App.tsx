@@ -11,7 +11,7 @@ const App: React.FC = () => {
     <>
       <AppHeader />
       <Container component="main" maxWidth={containerMaxWidth}>
-        <Box sx={{ height: 'calc(100vh - 64px)', p: 1 }}>
+        <Box sx={{ height: 'calc(100vh - 64px)' }}>
           <PageRouter />
         </Box>
       </Container>
