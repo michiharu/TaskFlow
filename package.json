@@ -11,11 +11,13 @@
     "lint": "eslint --fix --ext .ts,.tsx ./src",
     "lint-staged": "lint-staged",
     "prepare": "husky install",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "tsc": "tsc"
   },
   "lint-staged": {
     "package.json": "npx sort-package-json",
     "src/**/*.{ts,tsx}": [
+      "tsc",
       "prettier --write",
       "eslint --fix"
     ]
