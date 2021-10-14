@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { fork } from 'redux-saga/effects';
-
-import { createTestFlow } from './flow/saga';
+import { delay } from 'redux-saga/effects';
 
 export function* rootSaga() {
-  yield fork(createTestFlow);
+  yield delay(1);
 }

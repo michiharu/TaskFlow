@@ -14,7 +14,7 @@ type StateProps = {
 
 const FlowList: React.FC<StateProps> = ({ flows }) => {
   return (
-    <Grid container sx={{ mt: 3 }}>
+    <Grid container sx={{ mt: 2 }} spacing={2}>
       {flows.map((flow) => (
         <Grid key={flow.id} item xs={6} md={4} lg={3}>
           <Card sx={{ minWidth: 200 }}>
