@@ -34,8 +34,10 @@ const CreateFlowButton: React.FC = () => {
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.code === 'Enter' && !event.nativeEvent.isComposing) {
       dispatch(flowSlice.actions.create(title));
-      setTitle('');
-      setAnchorEl(null);
+      window.setTimeout(() => {
+        setTitle('');
+        setAnchorEl(null);
+      }, 0);
     }
   };
 
