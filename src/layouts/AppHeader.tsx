@@ -2,10 +2,11 @@ import * as React from 'react';
 
 import { styled, alpha } from '@mui/material/styles';
 
-import { AppBar, Container, InputBase, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Container, InputBase, Toolbar, Typography } from '@mui/material';
 
 import { Search as SearchIcon } from '@mui/icons-material';
 
+import CreateFlowButton from '../components/CreateFlowButton';
 import { containerMaxWidth } from '../const';
 
 const Search = styled('div')(({ theme }) => ({
@@ -58,6 +59,8 @@ const AppHeader: React.FC = () => {
           <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
             Task Flow
           </Typography>
+          <CreateFlowButton />
+          <Box sx={{ flexGrow: 1 }} />
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
