@@ -1,19 +1,17 @@
 {
   "name": "taskflow",
   "version": "0.0.0",
-  "private": true,
   "author": "michiharu",
   "scripts": {
-    "build": "react-scripts build",
+    "build": "tsc && vite build",
     "coverage": "npm run test -- --coverage .",
-    "eject": "react-scripts eject",
+    "dev": "vite",
     "fix": "npm run format && npm run lint && npx sort-package-json",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "eslint --fix --ext .ts,.tsx ./src",
     "lint-staged": "lint-staged",
     "prepare": "husky install",
-    "start": "react-scripts start",
-    "test": "react-scripts test"
+    "serve": "vite preview"
   },
   "lint-staged": {
     "package.json": "npx sort-package-json",
@@ -62,6 +60,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
+    "@vitejs/plugin-react": "^1.0.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-typescript": "^14.0.0",
     "eslint-config-prettier": "^8.3.0",
@@ -73,6 +72,7 @@
     "husky": "^7.0.0",
     "lint-staged": "^11.1.2",
     "prettier": "^2.4.1",
-    "sort-package-json": "^1.52.0"
+    "sort-package-json": "^1.52.0",
+    "vite": "^2.6.4"
   }
 }
