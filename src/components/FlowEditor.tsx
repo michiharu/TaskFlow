@@ -17,7 +17,7 @@ type StateProps = {
   settings: FlowEntitySettings;
 };
 
-const FlowRenderer: React.FC<StateProps> = ({ stageSize, entities, settings }) => {
+const FlowEditor: React.FC<StateProps> = ({ stageSize, entities, settings }) => {
   return (
     <ReactReduxContext.Consumer>
       {({ store }) => (
@@ -48,4 +48,4 @@ const mapStateToProps = (state: RootState): StateProps => {
   return { stageSize, entities, settings };
 };
 
-export default connect(mapStateToProps)(FlowRenderer);
+export default connect(mapStateToProps)(FlowEditor);
