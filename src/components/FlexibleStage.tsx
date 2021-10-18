@@ -18,17 +18,21 @@ const FlexibleStage: React.FC<Props> = ({ stageSize, children, refs }) => {
   const containerRef = React.useRef<HTMLDivElement>();
   const stageRef = React.useRef<Konva.default.Stage | null>();
 
-  const containerCallbackRef = React.useCallback((container: HTMLDivElement): void => {
-    containerRef.current = container;
-    if (stageRef.current && refs) refs(container, stageRef.current);
+  const containerCallbackRef = React.useCallback((container: HTMLDivElement | null): void => {
+    if (container) {
+      containerRef.current = container;
+      if (stageRef.current && refs) refs(container, stageRef.current);
 
-    const { width, height } = container.getBoundingClientRect();
-    setSize({ width, height });
+      const { width, height } = container.getBoundingClientRect();
+      setSize({ width, height });
+    }
   }, []);
 
-  const stageCallbackRef = React.useCallback((stage: Konva.default.Stage): void => {
-    stageRef.current = stage;
-    if (containerRef.current && refs) refs(containerRef.current, stage);
+  const stageCallbackRef = React.useCallback((stage: Konva.default.Stage | null): void => {
+    if (stage) {
+      stageRef.current = stage;
+      if (containerRef.current && refs) refs(containerRef.current, stage);
+    }
   }, []);
 
   React.useEffect(() => {
