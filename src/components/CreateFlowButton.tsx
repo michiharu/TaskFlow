@@ -46,7 +46,7 @@ const CreateFlowButton: React.FC = () => {
 
   return (
     <>
-      <IconButton aria-describedby={id} sx={{ mx: 2 }} onClick={handleOpen}>
+      <IconButton aria-describedby={id} onClick={handleOpen}>
         <AddIcon fontSize="inherit" />
       </IconButton>
 
