@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { styled, alpha } from '@mui/material/styles';
+import { Route, Switch } from 'react-router';
 
 import { AppBar as MuiAppBar, Box, Container, InputBase, Toolbar, Typography } from '@mui/material';
 
@@ -16,11 +17,9 @@ const Search = styled('div')(({ theme }) => ({
   '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  marginRight: theme.spacing(2),
   marginLeft: 0,
   width: '100%',
   [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
     width: 'auto',
   },
 }));
@@ -56,11 +55,19 @@ const AppBar: React.FC = () => {
     <MuiAppBar position="static">
       <Container maxWidth={containerMaxWidth}>
         <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2 }}>
             Task Flow
           </Typography>
-          <CreateFlowButton />
-          <Box sx={{ flexGrow: 1 }} />
+
+          <Switch>
+            <Route path="/" exact>
+              <CreateFlowButton />
+            </Route>
+            <Route path="/flow/:id"></Route>
+          </Switch>
+
+          <Box sx={{ flexGrow: 1, pl: 1 }} />
+
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
