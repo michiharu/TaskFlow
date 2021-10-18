@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { styled, alpha } from '@mui/material/styles';
 
-import { AppBar, Box, Container, InputBase, Toolbar, Typography } from '@mui/material';
+import { AppBar as MuiAppBar, Box, Container, InputBase, Toolbar, Typography } from '@mui/material';
 
 import { Search as SearchIcon } from '@mui/icons-material';
 
@@ -49,11 +49,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const AppHeader: React.FC = () => {
+const AppBar: React.FC = () => {
   // Referenced page
   // https://mui.com/components/app-bar/#app-bar-with-a-primary-search-field
   return (
-    <AppBar position="static">
+    <MuiAppBar position="static">
       <Container maxWidth={containerMaxWidth}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
@@ -69,8 +69,8 @@ const AppHeader: React.FC = () => {
           </Search>
         </Toolbar>
       </Container>
-    </AppBar>
+    </MuiAppBar>
   );
 };
 
-export default AppHeader;
+export default AppBar;
