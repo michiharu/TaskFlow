@@ -11,7 +11,7 @@ const PageRouter: React.FC = () => {
       <Route path="/" exact>
         <FlowList />
       </Route>
-      <Route path="/flow">
+      <Route path="/flow/:id">
         <FlowEditor />
       </Route>
     </Switch>
