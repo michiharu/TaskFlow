@@ -27,7 +27,7 @@ const FlowList: React.FC<StateProps> = ({ flows }) => {
       {flows.map((flow) => (
         <Grid key={flow.id} item xs={6} md={4} lg={3}>
           <Card sx={{ minWidth: 200 }}>
-            <CardActionArea onClick={handleClickCard(flow)}>
+            <CardActionArea onClick={handleClickCard(flow)} disableRipple>
               <CardContent sx={{ height: 200 }}>
                 <Typography>{flow.title}</Typography>
               </CardContent>
