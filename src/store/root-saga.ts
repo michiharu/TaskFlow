@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { delay } from 'redux-saga/effects';
+import { fork } from 'redux-saga/effects';
+
+import * as FlowSaga from './flow/saga';
 
 export function* rootSaga() {
-  yield delay(1);
+  yield fork(FlowSaga.loadDataFromLocalStorage);
+  yield fork(FlowSaga.handleAdd);
 }

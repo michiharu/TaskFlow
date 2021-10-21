@@ -6,6 +6,8 @@ import { Box, Button, IconButton, Popover, TextField } from '@mui/material';
 
 import { Add as AddIcon } from '@mui/icons-material';
 
+import { uuid4 } from '../funcs/utils';
+import { flowFactory } from '../store/flow/funcs';
 import { flowSlice } from '../store/flow/slice';
 
 const CreateFlowButton: React.FC = () => {
@@ -26,14 +28,16 @@ const CreateFlowButton: React.FC = () => {
   const handleChangeTitle: React.ChangeEventHandler<HTMLInputElement> = (event) => setTitle(event.target.value);
 
   const handleClickAdd = () => {
-    dispatch(flowSlice.actions.create(title));
+    const flow = flowFactory(uuid4(), title);
+    dispatch(flowSlice.actions.add(flow));
     setTitle('');
     setAnchorEl(null);
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.code === 'Enter' && !event.nativeEvent.isComposing) {
-      dispatch(flowSlice.actions.create(title));
+      const flow = flowFactory(uuid4(), title);
+      dispatch(flowSlice.actions.add(flow));
       window.setTimeout(() => {
         setTitle('');
         setAnchorEl(null);
