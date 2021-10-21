@@ -1,8 +1,6 @@
 import { createEntityAdapter, createSlice, PayloadAction as PA } from '@reduxjs/toolkit';
 
-import { uuid4 } from '../../funcs/utils';
 import { Flow, FlowState } from '../../types/flow';
-import { entityFactory } from '../flow-entity/funcs';
 import { RootState } from '../setup-store';
 
 const adapter = createEntityAdapter<Flow>();
@@ -13,10 +11,10 @@ export const flowSlice = createSlice({
   name: 'flow',
   initialState,
   reducers: {
-    create(state, { payload: title }: PA<string>) {
-      const id = uuid4();
-      const root = entityFactory(id, [], { type: 'root' });
-      const flow: Flow = { id: root.id, title, entities: [root] };
+    load(state, { payload: flows }: PA<Flow[]>) {
+      adapter.addMany(state, flows);
+    },
+    add(state, { payload: flow }: PA<Flow>) {
       adapter.addOne(state, flow);
     },
   },
