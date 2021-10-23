@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Route, Switch } from 'react-router-dom';
 
-import { flowPage, rootPage } from '../const/router';
+import { flowPage, rootPage } from '../const';
 
 import FlowEditor from './FlowEditor';
 import FlowList from './FlowList';

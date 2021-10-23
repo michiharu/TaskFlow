@@ -1,6 +1,6 @@
 import { createMatchSelector } from 'connected-react-router';
 
-import { FlowPage, RootPage } from '../types/router';
+import { FlowPage, RootPage } from '../types';
 
 export const rootPage: RootPage = { path: '/' };
 

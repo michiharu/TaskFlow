@@ -5,7 +5,7 @@ import { connect, useDispatch } from 'react-redux';
 
 import { Card, CardActionArea, CardContent, Grid, Typography } from '@mui/material';
 
-import { flowPage } from '../const/router';
+import { flowPage } from '../const';
 import { flowSelectors } from '../store/flow';
 import { Flow, RootState } from '../types';
 
