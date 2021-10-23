@@ -5,6 +5,7 @@ import { connect, useDispatch } from 'react-redux';
 
 import { Card, CardActionArea, CardContent, Grid, Typography } from '@mui/material';
 
+import { flowPage } from '../const/router';
 import { flowSelectors } from '../store/flow';
 import { Flow, RootState } from '../types';
 
@@ -14,7 +15,7 @@ type StateProps = {
 
 const FlowList: React.FC<StateProps> = ({ flows }) => {
   const dispatch = useDispatch();
-  const handleClickCard = (flow: Flow) => () => dispatch(push(`/flow/${flow.id}`));
+  const handleClickCard = (flow: Flow) => () => dispatch(push(flowPage.url({ id: flow.id })));
 
   return (
     <Grid container sx={{ mt: 2 }} spacing={2}>
