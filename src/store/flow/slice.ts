@@ -20,6 +20,4 @@ export const flowSlice = createSlice({
   },
 });
 
-export default { flowSlice };
-
 export const flowSelectors = adapter.getSelectors<RootState>((state) => state.flow);

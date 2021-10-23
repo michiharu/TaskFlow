@@ -1,6 +1,5 @@
 import { entitySettings as settings } from '../../const';
-import { Point, Size } from '../../types';
-import { FlowEntity, FlowNode } from '../../types/flow-entity';
+import { Point, Size, FlowEntity, FlowNode } from '../../types';
 
 import {
   rootOnlyEntities,

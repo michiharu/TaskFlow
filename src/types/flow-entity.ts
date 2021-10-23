@@ -1,4 +1,7 @@
-import { Point, Size, UUID } from '.';
+import { UUID } from '.';
+
+export type Point = { x: number; y: number };
+export type Size = { width: number; height: number };
 
 export type FlowType = 'root' | 'task' | 'switch' | 'case';
 

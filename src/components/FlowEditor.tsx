@@ -3,10 +3,8 @@ import * as React from 'react';
 import { Layer } from 'react-konva';
 import { ReactReduxContext, Provider, connect } from 'react-redux';
 
-import { entitySelectors } from '../store/flow-entity/slice';
-import { RootState } from '../store/setup-store';
-import { Size } from '../types';
-import { FlowEntity, FlowEntitySettings } from '../types/flow-entity';
+import { entitySelectors } from '../store/flow-entity';
+import { RootState, Size, FlowEntity, FlowEntitySettings } from '../types';
 
 import FlexibleStage from './FlexibleStage';
 import FlowCard from './FlowCard';
