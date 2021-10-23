@@ -2,16 +2,18 @@ import * as React from 'react';
 
 import { Route, Switch } from 'react-router-dom';
 
+import { flowPage, rootPage } from '../const/router';
+
 import FlowEditor from './FlowEditor';
 import FlowList from './FlowList';
 
 const PageRouter: React.FC = () => {
   return (
     <Switch>
-      <Route path="/" exact>
+      <Route path={rootPage.path} exact>
         <FlowList />
       </Route>
-      <Route path="/flow/:id">
+      <Route path={flowPage.path}>
         <FlowEditor />
       </Route>
     </Switch>
