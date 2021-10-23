@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Dictionary } from '@reduxjs/toolkit';
 
-import { Point, Size, UUID } from '../../types';
-import { FlowEntity, FlowNode, FlowEntitySettings } from '../../types/flow-entity';
+import { Point, Size, UUID, FlowEntity, FlowNode, FlowEntitySettings } from '../../types';
 
 import { FlowEntitySliceState } from './slice';
 

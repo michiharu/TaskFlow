@@ -5,9 +5,8 @@ import { connect, useDispatch } from 'react-redux';
 
 import { Card, CardActionArea, CardContent, Grid, Typography } from '@mui/material';
 
-import { flowSelectors } from '../store/flow/slice';
-import { RootState } from '../store/setup-store';
-import { Flow } from '../types/flow';
+import { flowSelectors } from '../store/flow';
+import { Flow, RootState } from '../types';
 
 type StateProps = {
   flows: Flow[];

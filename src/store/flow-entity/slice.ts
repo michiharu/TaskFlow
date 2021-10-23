@@ -2,10 +2,7 @@ import { createEntityAdapter, createSlice, Update, PayloadAction as PA } from '@
 
 import { entitySettings as settings } from '../../const';
 import { uuid4 } from '../../funcs/utils';
-import { UUID } from '../../types';
-import { Flow } from '../../types/flow';
-import { FlowEntity, FlowRootState } from '../../types/flow-entity';
-import { RootState } from '../setup-store';
+import { Flow, FlowEntity, FlowRootState, RootState, UUID } from '../../types';
 
 import { entityFactory, setRect } from './funcs';
 
@@ -69,7 +66,5 @@ export const entitySlice = createSlice({
     },
   },
 });
-
-export default { entitySlice };
 
 export const entitySelectors = adapter.getSelectors<RootState>((state) => state.entity);

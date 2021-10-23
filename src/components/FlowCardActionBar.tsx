@@ -14,10 +14,9 @@ import {
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 
-import { cardActionBarHeight as barHeight } from '../const';
-import { entitySlice } from '../store/flow-entity/slice';
-import { cardTheme } from '../theme';
-import { FlowEntity, FlowEntitySettings } from '../types/flow-entity';
+import { cardActionBarHeight as barHeight, cardTheme } from '../const';
+import { entitySlice } from '../store/flow-entity';
+import { FlowEntity, FlowEntitySettings } from '../types';
 
 const iconArea = 26;
 const mx = 4;

@@ -7,8 +7,7 @@ import { Box, Button, IconButton, Popover, TextField } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
 import { uuid4 } from '../funcs/utils';
-import { flowFactory } from '../store/flow/funcs';
-import { flowSlice } from '../store/flow/slice';
+import { flowFactory, flowSlice } from '../store/flow';
 
 const CreateFlowButton: React.FC = () => {
   const dispatch = useDispatch();

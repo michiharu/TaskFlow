@@ -8,8 +8,8 @@ import { Provider } from 'react-redux';
 import { CssBaseline } from '@mui/material';
 
 import App from './App';
+import { theme } from './const';
 import { history, store } from './store/setup-store';
-import { theme } from './theme';
 
 const Providers: React.FC = () => {
   return (
