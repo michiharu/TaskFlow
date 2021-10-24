@@ -2,13 +2,14 @@ import * as React from 'react';
 
 import { styled, alpha } from '@mui/material/styles';
 import { Route, Switch } from 'react-router';
+import { Link } from 'react-router-dom';
 
-import { AppBar as MuiAppBar, Box, Container, InputBase, Toolbar, Typography } from '@mui/material';
+import { AppBar as MuiAppBar, Box, Button, Container, Divider, InputBase, Toolbar } from '@mui/material';
 
 import { Search as SearchIcon } from '@mui/icons-material';
 
 import CreateFlowButton from '../components/CreateFlowButton';
-import { containerMaxWidth } from '../const';
+import { containerMaxWidth, rootPage } from '../const';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -55,12 +56,13 @@ const AppBar: React.FC = () => {
     <MuiAppBar position="static">
       <Container maxWidth={containerMaxWidth}>
         <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2 }}>
+          <Button component={Link} to={rootPage.path} size="large" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2 }}>
             Task Flow
-          </Typography>
+          </Button>
 
           <Switch>
             <Route path="/" exact>
+              <Divider orientation="vertical" flexItem variant="middle" sx={{ mr: 2 }} />
               <CreateFlowButton />
             </Route>
             <Route path="/flow/:id"></Route>
