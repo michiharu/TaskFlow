@@ -14,7 +14,7 @@ export function* loadDataFromLocalStorage() {
   yield put(flowSlice.actions.load(flows));
 }
 
-export function* handleAdd() {
+export function* add() {
   while (true) {
     const { payload: flow }: PA<Flow> = yield take(flowSlice.actions.add.toString());
     const flowsJson = localStorage.getItem(flowsKey);
