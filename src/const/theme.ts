@@ -4,6 +4,11 @@ const themeOptions = {
   palette: {
     mode: 'dark',
   },
+  typography: {
+    button: {
+      textTransform: 'none',
+    },
+  },
 } as const;
 
 export const theme = createTheme(themeOptions);
