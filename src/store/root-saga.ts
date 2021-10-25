@@ -8,4 +8,5 @@ export function* rootSaga() {
   yield fork(Router.locationChange);
   yield fork(FlowSaga.loadDataFromLocalStorage);
   yield fork(FlowSaga.add);
+  yield fork(FlowSaga.sync);
 }

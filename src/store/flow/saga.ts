@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { put, take } from '@redux-saga/core/effects';
+import { put, select, take } from '@redux-saga/core/effects';
 import { PayloadAction as PA } from '@reduxjs/toolkit';
 
-import { Flow } from '../../types/flow';
+import { Flow } from '../../types';
+import { entitySelectors } from '../flow-entity';
+import { RootState } from '../setup-store';
 
 import { flowSlice } from './slice';
+
+import { flowSelectors } from '.';
 
 const flowsKey = 'flows';
 
@@ -20,5 +24,22 @@ export function* add() {
     const flowsJson = localStorage.getItem(flowsKey);
     const flows = flowsJson ? (JSON.parse(flowsJson) as Flow[]) : [];
     localStorage.setItem(flowsKey, JSON.stringify(flows.concat(flow)));
+  }
+}
+
+export function* sync() {
+  while (true) {
+    const { type }: { type: string } = yield take('*');
+    if (type.startsWith('flow-entity')) {
+      const state: RootState = yield select();
+      const id = state.entity.rootId;
+      if (!id) continue;
+      const flow = flowSelectors.selectById(state, id);
+      if (!flow) throw new Error();
+      const entities = entitySelectors.selectAll(state);
+      yield put(flowSlice.actions.set({ ...flow, entities }));
+      const flows: Flow[] = yield select(flowSelectors.selectAll);
+      localStorage.setItem(flowsKey, JSON.stringify(flows));
+    }
   }
 }

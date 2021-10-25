@@ -17,6 +17,9 @@ export const flowSlice = createSlice({
     add(state, { payload: flow }: PA<Flow>) {
       adapter.addOne(state, flow);
     },
+    set(state, { payload: flow }: PA<Flow>) {
+      adapter.setOne(state, flow);
+    },
   },
 });
 
