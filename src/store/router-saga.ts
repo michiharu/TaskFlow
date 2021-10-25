@@ -11,7 +11,7 @@ import { RootState } from './setup-store';
 export function* locationChange() {
   while (true) {
     yield take(LOCATION_CHANGE);
-    const rootState: RootState = yield select((state) => state);
+    const rootState: RootState = yield select();
     const match = flowPage.matchSelector(rootState);
     if (!match || !match.isExact) continue;
     const flow = flowSelectors.selectById(rootState, match.params.id);
