@@ -12,7 +12,7 @@ import { flowSelectors } from '.';
 
 const flowsKey = 'flows';
 
-export function* loadDataFromLocalStorage() {
+export function* load() {
   const flowsJson = localStorage.getItem(flowsKey);
   const flows = flowsJson ? (JSON.parse(flowsJson) as Flow[]) : [];
   yield put(flowSlice.actions.load(flows));
