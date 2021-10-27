@@ -37,6 +37,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
+  width: '100%',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
@@ -56,13 +57,15 @@ const AppBar: React.FC = () => {
     <MuiAppBar position="static">
       <Container maxWidth={containerMaxWidth}>
         <Toolbar>
-          <Button component={Link} to={rootPage.path} size="large" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2 }}>
-            Task Flow
-          </Button>
+          <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+            <Button component={Link} to={rootPage.path} size="large">
+              Task Flow
+            </Button>
+            <Divider orientation="vertical" flexItem variant="middle" sx={{ mx: 1 }} />
+          </Box>
 
           <Switch>
             <Route path="/" exact>
-              <Divider orientation="vertical" flexItem variant="middle" sx={{ mr: 2 }} />
               <CreateFlowButton />
             </Route>
             <Route path="/flow/:id"></Route>
