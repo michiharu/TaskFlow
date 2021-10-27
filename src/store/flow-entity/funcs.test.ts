@@ -1,5 +1,5 @@
 import { entitySettings as settings } from '../../const';
-import { Point, Size, FlowEntity, FlowNode } from '../../types';
+import { Point, Size, FlowEntity, FlowNode, UUID } from '../../types';
 
 import {
   rootOnlyEntities,
@@ -33,12 +33,12 @@ describe('root only', () => {
   });
   const nodeWithSize: FlowNode = { ...node, tree: noChildOpenTree };
   test('setSize', () => {
-    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const point: Point = { x: 0, y: 0 };
     const resultWithPoint: FlowNode = { ...nodeWithSize, point };
-    expect(setPoint(nodeWithSize, settings, true, point)).toEqual(resultWithPoint);
+    expect(setPoint(nodeWithSize, true, point)).toEqual(resultWithPoint);
   });
 });
 
@@ -67,7 +67,7 @@ describe('flat entities', () => {
     ],
   };
   test('setSize', () => {
-    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
@@ -83,7 +83,7 @@ describe('flat entities', () => {
         { ...child3, tree: noChildOpenTree, point: child3Point, children: [] },
       ],
     };
-    expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
+    expect(setPoint(nodeWithSize, true, rootPoint)).toEqual(resultWithPoint);
   });
 });
 
@@ -124,7 +124,7 @@ describe('nested entities', () => {
     ],
   };
   test('setSize', () => {
-    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
@@ -157,7 +157,7 @@ describe('nested entities', () => {
         },
       ],
     };
-    expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
+    expect(setPoint(nodeWithSize, true, rootPoint)).toEqual(resultWithPoint);
   });
 });
 
@@ -188,7 +188,7 @@ describe('closed entities', () => {
     ],
   };
   test('setSize', () => {
-    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
@@ -202,7 +202,7 @@ describe('closed entities', () => {
         { ...child3, tree: card, point: child3Point, children: [] },
       ],
     };
-    expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
+    expect(setPoint(nodeWithSize, true, rootPoint)).toEqual(resultWithPoint);
   });
 });
 
@@ -232,7 +232,7 @@ describe('horizontal entities', () => {
     ],
   };
   test('setSize', () => {
-    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
@@ -253,7 +253,7 @@ describe('horizontal entities', () => {
         { ...child3, tree: child3Tree, point: child3Point, children: [] },
       ],
     };
-    expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
+    expect(setPoint(nodeWithSize, true, rootPoint)).toEqual(resultWithPoint);
   });
 });
 
@@ -274,7 +274,7 @@ describe('nested closed entities', () => {
     children: [{ ...child1, tree: card, children: [{ ...child2, children: [{ ...child3, children: [] }] }] }],
   };
   test('setSize', () => {
-    expect(setTreeSize(node, settings, true)).toEqual(nodeWithSize);
+    expect(setTreeSize(node, true)).toEqual(nodeWithSize);
   });
   test('setPoint', () => {
     const rootPoint: Point = { x: 0, y: 0 };
@@ -291,7 +291,7 @@ describe('nested closed entities', () => {
         },
       ],
     };
-    expect(setPoint(nodeWithSize, settings, true, rootPoint)).toEqual(resultWithPoint);
+    expect(setPoint(nodeWithSize, true, rootPoint)).toEqual(resultWithPoint);
   });
 });
 
@@ -325,8 +325,7 @@ describe('setRect', () => {
   const state: FlowEntitySliceState = {
     ids: [root.id, child1.id, child2.id, child3.id],
     entities: { [root.id]: root, [child1.id]: child1, [child2.id]: child2, [child3.id]: child3 },
-    rootId: root.id,
-    settings: { ...settings, stagePadding: 0 },
+    flow: { id: '12345678-9abc-4def-9000-000000000123' as UUID, title: '', rootId: root.id },
   };
   const rootTree: Size = { width: indent * m * 1 + card.width + m, height: card.height * 3 + m * 3 };
   const rootPoint: Point = { x: 0, y: 0 };

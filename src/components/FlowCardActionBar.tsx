@@ -14,22 +14,21 @@ import {
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 
-import { cardActionBarHeight as barHeight, cardTheme } from '../const';
+import { cardActionBarHeight as barHeight, cardTheme, entitySettings as settings } from '../const';
 import { entitySlice } from '../store/flow-entity';
-import { FlowEntity, FlowEntitySettings } from '../types';
+import { FlowEntity } from '../types';
 
 const iconArea = 26;
 const mx = 4;
+const { card, indent, m } = settings;
 
 type Props = {
   entity: FlowEntity;
-  settings: FlowEntitySettings;
 };
 
-const FlowCardActionBar: React.FC<Props> = ({ entity, settings }) => {
+const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
   const dispatch = useDispatch();
   const { id, parent, type, tree, open, direction } = entity;
-  const { card, indent, m } = settings;
   if (!tree) return null;
 
   const buttonSx: SxProps = { position: 'absolute', top: barHeight / 2, transform: 'translate3d(-50%, -50%, 0)' };
