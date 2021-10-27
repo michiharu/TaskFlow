@@ -1,8 +1,10 @@
-import { UUID } from '../../types';
+import { uuid4 } from '../../funcs/utils';
 import { Flow } from '../../types/flow';
 import { entityFactory } from '../flow-entity/funcs';
 
-export const flowFactory = (id: UUID, title: string): Flow => {
-  const root = entityFactory(id, [], { type: 'root' });
-  return { id: root.id, title, entities: [root] };
+export const flowFactory = (title: string): Flow => {
+  const id = uuid4();
+  const rootId = uuid4();
+  const root = entityFactory(rootId, [], { type: 'root' });
+  return { id, title, rootId, entities: [root] };
 };
