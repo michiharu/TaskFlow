@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Dictionary } from '@reduxjs/toolkit';
 
-import { Point, Size, UUID, FlowEntity, FlowNode, FlowEntitySettings } from '../../types';
+import { entitySettings as settings } from '../../const';
+import { Point, Size, UUID, FlowEntity, FlowNode } from '../../types';
 
 import { FlowEntitySliceState } from './slice';
 
@@ -24,15 +25,15 @@ export const entityToTree = (id: UUID, entities: Dictionary<FlowEntity>): FlowNo
   return { ...entity, children: entity.childIds.map((childId) => entityToTree(childId, entities)) };
 };
 
-export const setTreeSize = (node: FlowNode, settings: FlowEntitySettings, visible: boolean): FlowNode => {
+export const setTreeSize = (node: FlowNode, visible: boolean): FlowNode => {
   const { direction } = node;
   const { card, indent, m } = settings;
   if (!visible) {
-    const children = node.children.map((c) => setTreeSize(c, settings, false));
+    const children = node.children.map((c) => setTreeSize(c, false));
     return { ...node, tree: undefined, children };
   }
   if (!node.open) {
-    const children = node.children.map((c) => setTreeSize(c, settings, false));
+    const children = node.children.map((c) => setTreeSize(c, false));
     return { ...node, tree: card, children };
   }
   if (node.children.length === 0) {
@@ -45,27 +46,27 @@ export const setTreeSize = (node: FlowNode, settings: FlowEntitySettings, visibl
     }
   }
   if (direction === 'vertical') {
-    const children = node.children.map((c) => setTreeSize(c, settings, true));
+    const children = node.children.map((c) => setTreeSize(c, true));
     const width = indent * m + Math.max(...children.map((c) => c.tree!.width)) + m;
     const height = card.height + m + children.map((c) => c.tree!.height + m).reduce((a, b) => a + b);
     return { ...node, tree: { width, height }, children };
   } else {
-    const children = node.children.map((c) => setTreeSize(c, settings, true));
+    const children = node.children.map((c) => setTreeSize(c, true));
     const width = card.width + m + children.map((c) => c.tree!.width + m).reduce((a, b) => a + b);
     const height = indent * m + Math.max(...children.map((c) => c.tree!.height)) + m;
     return { ...node, tree: { width, height }, children };
   }
 };
 
-export const setPoint = (node: FlowNode, settings: FlowEntitySettings, visible: boolean, point: Point): FlowNode => {
+export const setPoint = (node: FlowNode, visible: boolean, point: Point): FlowNode => {
   const { direction } = node;
   const { card, indent, m } = settings;
   if (!visible) {
-    const children = node.children.map((c) => setPoint(c, settings, false, point));
+    const children = node.children.map((c) => setPoint(c, false, point));
     return { ...node, point: undefined, children };
   }
   if (!node.open) {
-    const children = node.children.map((c) => setPoint(c, settings, false, point));
+    const children = node.children.map((c) => setPoint(c, false, point));
     return { ...node, point, children };
   }
   if (node.children.length === 0) {
@@ -77,7 +78,7 @@ export const setPoint = (node: FlowNode, settings: FlowEntitySettings, visible: 
     const x = point.x + (direction === 'vertical' ? indent * m : card.width + m + anchor);
     const y = point.y + (direction === 'vertical' ? card.height + m + anchor : indent * m);
     anchor += (direction === 'vertical' ? child.tree!.height : child.tree!.width) + m;
-    return setPoint(child, settings, true, { x, y });
+    return setPoint(child, true, { x, y });
   });
   return { ...node, point, children };
 };
@@ -90,10 +91,12 @@ export const nodeToEntities = (node: FlowNode): FlowEntity[] => {
 };
 
 export const setRect = (state: FlowEntitySliceState): FlowEntity[] => {
-  const { rootId, entities, settings } = state;
+  const { flow, entities } = state;
+  if (!flow) throw new Error();
+  const { rootId } = flow;
   if (!rootId || !entities[rootId]) throw new Error();
   let root = entityToTree(rootId, entities);
-  root = setTreeSize(root, settings, true);
-  root = setPoint(root, settings, true, { x: settings.stagePadding, y: settings.stagePadding });
+  root = setTreeSize(root, true);
+  root = setPoint(root, true, { x: settings.stagePadding, y: settings.stagePadding });
   return nodeToEntities(root).map((entity, index) => ({ ...entity, index }));
 };

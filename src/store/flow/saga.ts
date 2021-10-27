@@ -32,9 +32,7 @@ export function* sync() {
     const { type }: { type: string } = yield take('*');
     if (type.startsWith('flow-entity')) {
       const state: RootState = yield select();
-      const id = state.entity.rootId;
-      if (!id) continue;
-      const flow = flowSelectors.selectById(state, id);
+      const flow = state.entity.flow;
       if (!flow) throw new Error();
       const entities = entitySelectors.selectAll(state);
       yield put(flowSlice.actions.set({ ...flow, entities }));

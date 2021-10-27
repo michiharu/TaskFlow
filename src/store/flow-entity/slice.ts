@@ -1,13 +1,12 @@
 import { createEntityAdapter, createSlice, Update, PayloadAction as PA } from '@reduxjs/toolkit';
 
-import { entitySettings as settings } from '../../const';
 import { uuid4 } from '../../funcs/utils';
-import { Flow, FlowEntity, FlowRootState, RootState, UUID } from '../../types';
+import { Flow, FlowEntity, FlowState, RootState, UUID } from '../../types';
 
 import { entityFactory, setRect } from './funcs';
 
 const adapter = createEntityAdapter<FlowEntity>({ sortComparer: (a, b) => a.index - b.index });
-const initialState = adapter.getInitialState<FlowRootState>({ settings });
+const initialState = adapter.getInitialState<FlowState>({});
 export type FlowEntitySliceState = typeof initialState;
 
 export const entitySlice = createSlice({
@@ -20,8 +19,8 @@ export const entitySlice = createSlice({
       state.focus = undefined;
       state.dragging = undefined;
 
-      const { id, entities } = flow;
-      state.rootId = id;
+      const { id, title, rootId, entities } = flow;
+      state.flow = { id, title, rootId };
       adapter.setAll(state, entities);
 
       const calculated = setRect(state);
