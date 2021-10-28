@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Route, Switch } from 'react-router-dom';
 
-import { flowPage, rootPage } from '../const';
+import { flowPage, topPage } from '../const';
 
 import FlowEditor from './FlowEditor';
 import FlowList from './FlowList';
@@ -10,7 +10,7 @@ import FlowList from './FlowList';
 const PageRouter: React.FC = () => {
   return (
     <Switch>
-      <Route path={rootPage.path} exact>
+      <Route path={topPage.path} exact>
         <FlowList />
       </Route>
       <Route path={flowPage.path}>

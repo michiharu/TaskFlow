@@ -9,5 +9,5 @@ export type PageWithParams<Params extends { [K in keyof Params]?: string }> = {
   matchSelector: matchSelectorFn<RootState, Params>;
 };
 
-export type RootPage = Page;
+export type TopPage = Page;
 export type FlowPage = PageWithParams<{ id: string }>;

@@ -1,8 +1,8 @@
 import { createMatchSelector } from 'connected-react-router';
 
-import { FlowPage, RootPage } from '../types';
+import { FlowPage, TopPage } from '../types';
 
-export const rootPage: RootPage = { path: '/' };
+export const topPage: TopPage = { path: '/' };
 
 const flowPath = '/flow/:id';
 export const flowPage: FlowPage = {
