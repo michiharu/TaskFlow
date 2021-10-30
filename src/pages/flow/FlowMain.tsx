@@ -3,19 +3,18 @@ import * as React from 'react';
 import { Layer } from 'react-konva';
 import { ReactReduxContext, Provider, connect } from 'react-redux';
 
-import { entitySettings as settings } from '../const';
-import { entitySelectors } from '../store/flow-entity';
-import { RootState, Size, FlowEntity } from '../types';
-
-import FlexibleStage from './FlexibleStage';
-import FlowCard from './FlowCard';
+import FlexibleStage from '../../components/FlexibleStage';
+import FlowCard from '../../components/FlowCard';
+import { entitySettings as settings } from '../../const';
+import { entitySelectors } from '../../store/flow-entity';
+import { RootState, Size, FlowEntity } from '../../types';
 
 type StateProps = {
   stageSize: Size;
   entities: FlowEntity[];
 };
 
-const FlowEditor: React.FC<StateProps> = ({ stageSize, entities }) => {
+const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities }) => {
   return (
     <ReactReduxContext.Consumer>
       {({ store }) => (
@@ -46,4 +45,4 @@ const mapStateToProps = (state: RootState): StateProps => {
   return { stageSize, entities };
 };
 
-export default connect(mapStateToProps)(FlowEditor);
+export const FlowMain = connect(mapStateToProps)(FlowMainFC);
