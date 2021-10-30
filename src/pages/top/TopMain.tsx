@@ -5,15 +5,15 @@ import { Link } from 'react-router-dom';
 
 import { Card, CardActionArea, CardContent, Grid, Typography } from '@mui/material';
 
-import { flowPage } from '../const';
-import { flowSelectors } from '../store/flow';
-import { Flow, RootState } from '../types';
+import { flowPage } from '../../const';
+import { flowSelectors } from '../../store/flow';
+import { Flow, RootState } from '../../types';
 
 type StateProps = {
   flows: Flow[];
 };
 
-const FlowList: React.FC<StateProps> = ({ flows }) => {
+const TopMainFC: React.FC<StateProps> = ({ flows }) => {
   return (
     <Grid container sx={{ mt: 2 }} spacing={2}>
       {flows.map((flow) => (
@@ -36,4 +36,4 @@ const mapStateToProps = (state: RootState): StateProps => {
   return { flows };
 };
 
-export default connect(mapStateToProps)(FlowList);
+export const TopMain = connect(mapStateToProps)(TopMainFC);
