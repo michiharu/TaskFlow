@@ -4,11 +4,11 @@ import { styled, alpha } from '@mui/material/styles';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import { AppBar as MuiAppBar, Box, Button, Container, Divider, InputBase, Toolbar } from '@mui/material';
+import { AppBar as MuiAppBar, Box, Button, Divider, InputBase, Toolbar } from '@mui/material';
 
 import { Search as SearchIcon } from '@mui/icons-material';
 
-import { containerMaxWidth, flowPage, topPage } from '../const';
+import { flowPage, topPage } from '../const';
 import { FlowAppBar } from '../pages/flow';
 import { TopAppBar } from '../pages/top';
 
@@ -56,34 +56,32 @@ const AppBar: React.FC = () => {
   // https://mui.com/components/app-bar/#app-bar-with-a-primary-search-field
   return (
     <MuiAppBar position="static">
-      <Container maxWidth={containerMaxWidth}>
-        <Toolbar>
-          <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-            <Button component={Link} to={topPage.path} size="large">
-              Task Flow
-            </Button>
-            <Divider orientation="vertical" flexItem variant="middle" sx={{ mx: 1 }} />
-          </Box>
+      <Toolbar>
+        <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          <Button component={Link} to={topPage.path} size="large">
+            Task Flow
+          </Button>
+          <Divider orientation="vertical" flexItem variant="middle" sx={{ mx: 1 }} />
+        </Box>
 
-          <Switch>
-            <Route path={topPage.path} exact>
-              <TopAppBar />
-            </Route>
-            <Route path={flowPage.path}>
-              <FlowAppBar />
-            </Route>
-          </Switch>
+        <Switch>
+          <Route path={topPage.path} exact>
+            <TopAppBar />
+          </Route>
+          <Route path={flowPage.path}>
+            <FlowAppBar />
+          </Route>
+        </Switch>
 
-          <Box sx={{ flexGrow: 1, pl: 1 }} />
+        <Box sx={{ flexGrow: 1, pl: 1 }} />
 
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
-          </Search>
-        </Toolbar>
-      </Container>
+        <Search>
+          <SearchIconWrapper>
+            <SearchIcon />
+          </SearchIconWrapper>
+          <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+        </Search>
+      </Toolbar>
     </MuiAppBar>
   );
 };
