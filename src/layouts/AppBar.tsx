@@ -8,8 +8,9 @@ import { AppBar as MuiAppBar, Box, Button, Container, Divider, InputBase, Toolba
 
 import { Search as SearchIcon } from '@mui/icons-material';
 
-import CreateFlowButton from '../components/CreateFlowButton';
 import { containerMaxWidth, flowPage, topPage } from '../const';
+import { FlowAppBar } from '../pages/flow';
+import { TopAppBar } from '../pages/top';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -66,9 +67,11 @@ const AppBar: React.FC = () => {
 
           <Switch>
             <Route path={topPage.path} exact>
-              <CreateFlowButton />
+              <TopAppBar />
             </Route>
-            <Route path={flowPage.path}></Route>
+            <Route path={flowPage.path}>
+              <FlowAppBar />
+            </Route>
           </Switch>
 
           <Box sx={{ flexGrow: 1, pl: 1 }} />

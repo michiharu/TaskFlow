@@ -3,18 +3,17 @@ import * as React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import { flowPage, topPage } from '../const';
-
-import FlowEditor from './FlowEditor';
-import FlowList from './FlowList';
+import { FlowMain } from '../pages/flow';
+import { TopMain } from '../pages/top';
 
 const PageRouter: React.FC = () => {
   return (
     <Switch>
       <Route path={topPage.path} exact>
-        <FlowList />
+        <TopMain />
       </Route>
       <Route path={flowPage.path}>
-        <FlowEditor />
+        <FlowMain />
       </Route>
     </Switch>
   );
