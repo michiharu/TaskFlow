@@ -16,7 +16,7 @@ export const entitySlice = createSlice({
     setFlow(state, { payload: flow }: PA<Flow>) {
       // reset state
       adapter.removeAll(state);
-      state.focus = undefined;
+      state.selected = undefined;
       state.dragging = undefined;
 
       const { id, title, rootId, entities } = flow;

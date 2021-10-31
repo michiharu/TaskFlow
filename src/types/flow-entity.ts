@@ -22,6 +22,6 @@ export type FlowState = {
     title: string;
     rootId: UUID;
   };
-  focus?: UUID;
+  selected?: UUID;
   dragging?: UUID;
 };
