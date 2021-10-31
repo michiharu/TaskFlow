@@ -1,31 +1,48 @@
 import * as React from 'react';
 
-import * as Konva from 'konva';
-import { Group, Rect } from 'react-konva';
+import { Group, Rect, Text } from 'react-konva';
 
-import { cardActionBarHeight, entitySettings } from '../const';
+import { entitySettings } from '../const';
 import { FlowEntity } from '../types';
 
 import FlowCardActionBar from './FlowCardActionBar';
-import FlowCardContent from './FlowCardContent';
+
+const { card } = entitySettings;
+const space = 8;
 
 type Props = {
   entity: FlowEntity;
+  selected: boolean;
 };
 
-const FlowCard: React.FC<Props> = ({ entity }) => {
-  const { point, tree } = entity;
-  const rootRef = React.useRef<Konva.default.Group>(null);
-  const cardRef = React.useRef<Konva.default.Rect>(null);
+const FlowCard: React.FC<Props> = ({ entity, selected }) => {
+  // const dispatch = useDispatch();
+  const { point, tree, text } = entity;
   if (!point || !tree) return null;
-
+  const cardGroupProps: React.ComponentProps<typeof Group> = {
+    // onMouseEnter() {
+    //   dispatch(entitySlice.actions.select(id));
+    // },
+  };
+  const cardProps: React.ComponentProps<typeof Rect> = { ...card };
+  const textProps: React.ComponentProps<typeof Text> = {
+    text,
+    fontSize: 14,
+    lineHeight: 1.5,
+    x: space,
+    y: space,
+    width: card.width - space * 2,
+    height: card.height - space * 2,
+  };
   return (
-    <Group ref={rootRef} {...point}>
-      <Rect ref={cardRef} {...tree} fill="#00aaff08" />
-      <Rect {...entitySettings.card} fill="#2348" />
-      <Rect width={entitySettings.card.width} height={cardActionBarHeight} fill="#6666" />
-      <FlowCardActionBar entity={entity} />
-      <FlowCardContent entity={entity} />
+    <Group {...point}>
+      <Rect {...tree} fill="#00aaff08" />
+      <Group {...cardGroupProps}>
+        <Rect {...cardProps} fill="#2348" />
+        <Text {...textProps} fill="#fff" />
+      </Group>
+
+      {selected && <FlowCardActionBar entity={entity} />}
     </Group>
   );
 };
