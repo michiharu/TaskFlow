@@ -5,7 +5,7 @@ export type Size = { width: number; height: number };
 
 export type FlowType = 'root' | 'task' | 'switch' | 'case';
 
-type BaseEntity = { id: UUID; childIds: UUID[]; index: number; text: { primary: string; secondary: string } };
+type BaseEntity = { id: UUID; childIds: UUID[]; index: number; text: string };
 
 export type Direction = 'vertical' | 'horizontal';
 type BaseState = { type: FlowType; open: boolean; direction: Direction };

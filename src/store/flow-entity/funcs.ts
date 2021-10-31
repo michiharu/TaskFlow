@@ -9,13 +9,7 @@ import { FlowEntitySliceState } from './slice';
 type FactoryOptions = Partial<Omit<FlowEntity, 'id' | 'childIds'>>;
 
 export const entityFactory = (id: UUID, childIds: UUID[] = [], options: FactoryOptions = {}): FlowEntity => {
-  const {
-    index = 0,
-    type = 'task',
-    direction = 'vertical',
-    open = true,
-    text = { primary: '', secondary: '' },
-  } = options;
+  const { index = 0, type = 'task', direction = 'vertical', open = true, text = '' } = options;
   return { id, childIds, index, type, direction, open, text };
 };
 
