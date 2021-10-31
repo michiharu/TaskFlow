@@ -13,7 +13,12 @@ const themeOptions = {
 
 export const theme = createTheme(themeOptions);
 
-export const cardTheme = createTheme({
+export const cardActionTheme = createTheme({
   ...themeOptions,
   typography: { fontSize: 10 },
+});
+
+export const cardContentTheme = createTheme({
+  ...themeOptions,
+  typography: { fontSize: 13 },
 });

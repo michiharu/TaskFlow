@@ -14,7 +14,7 @@ import {
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 
-import { cardActionBarHeight as barHeight, cardTheme, entitySettings as settings } from '../const';
+import { cardActionBarHeight as barHeight, cardActionTheme, entitySettings as settings } from '../const';
 import { entitySlice } from '../store/flow-entity';
 import { FlowEntity } from '../types';
 
@@ -77,7 +77,7 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
   if (type === 'root') {
     return (
       <Html>
-        <ThemeProvider theme={cardTheme}>
+        <ThemeProvider theme={cardActionTheme}>
           <Box sx={{ width: 0, height: 0, position: 'relative' }}>
             {directionIconButton}
             {openCloseIconButton}
@@ -117,7 +117,7 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
 
   return (
     <Html>
-      <ThemeProvider theme={cardTheme}>
+      <ThemeProvider theme={cardActionTheme}>
         <Box sx={{ width: 0, height: 0, position: 'relative' }}>
           {closeIconButton}
           {directionIconButton}
