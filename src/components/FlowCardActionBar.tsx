@@ -4,7 +4,7 @@ import { SxProps } from '@mui/system';
 import { Html } from 'react-konva-utils';
 import { useDispatch } from 'react-redux';
 
-import { ThemeProvider, Box, IconButton, IconButtonProps } from '@mui/material';
+import { ThemeProvider, Box, IconButton, IconButtonProps, Badge } from '@mui/material';
 
 import {
   Close as CloseIcon,
@@ -28,7 +28,7 @@ type Props = {
 
 const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
   const dispatch = useDispatch();
-  const { id, parent, type, tree, open, direction } = entity;
+  const { id, parent, type, tree, open, direction, childIds } = entity;
   if (!tree) return null;
 
   const buttonSx: SxProps = { position: 'absolute', top: barHeight / 2, transform: 'translate3d(-50%, -50%, 0)' };
@@ -55,7 +55,15 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
   };
   const openCloseIconButton = (
     <IconButton {...openCloseIconButtonProps}>
-      {open ? <ExpandLessIcon fontSize="inherit" /> : <ExpandMoreIcon fontSize="inherit" />}
+      {open ? (
+        <ExpandLessIcon fontSize="inherit" />
+      ) : childIds.length !== 0 ? (
+        <Badge color="primary" variant="dot">
+          <ExpandMoreIcon fontSize="inherit" />
+        </Badge>
+      ) : (
+        <ExpandMoreIcon fontSize="inherit" />
+      )}
     </IconButton>
   );
   const addChildIconButtonProps: IconButtonProps = {
