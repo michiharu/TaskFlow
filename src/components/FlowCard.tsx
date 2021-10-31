@@ -1,8 +1,10 @@
 import * as React from 'react';
 
 import { Group, Rect, Text } from 'react-konva';
+import { useDispatch } from 'react-redux';
 
 import { entitySettings } from '../const';
+import { entitySlice } from '../store/flow-entity';
 import { FlowEntity } from '../types';
 
 import FlowCardActionBar from './FlowCardActionBar';
@@ -16,13 +18,19 @@ type Props = {
 };
 
 const FlowCard: React.FC<Props> = ({ entity, selected }) => {
-  // const dispatch = useDispatch();
-  const { point, tree, text } = entity;
+  const dispatch = useDispatch();
+  const { id, point, tree, text } = entity;
   if (!point || !tree) return null;
+  const treeProps: React.ComponentProps<typeof Rect> = {
+    ...tree,
+    onMouseLeave() {
+      if (selected) dispatch(entitySlice.actions.select(undefined));
+    },
+  };
   const cardGroupProps: React.ComponentProps<typeof Group> = {
-    // onMouseEnter() {
-    //   dispatch(entitySlice.actions.select(id));
-    // },
+    onMouseEnter() {
+      dispatch(entitySlice.actions.select(id));
+    },
   };
   const cardProps: React.ComponentProps<typeof Rect> = { ...card };
   const textProps: React.ComponentProps<typeof Text> = {
@@ -36,7 +44,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   };
   return (
     <Group {...point}>
-      <Rect {...tree} fill="#00aaff08" />
+      <Rect {...treeProps} fill="#00aaff08" />
       <Group {...cardGroupProps}>
         <Rect {...cardProps} fill="#2348" />
         <Text {...textProps} fill="#fff" />

@@ -8,7 +8,7 @@ import FlexibleStage from '../../components/FlexibleStage';
 import FlowCard from '../../components/FlowCard';
 import { entitySettings as settings } from '../../const';
 import { entitySelectors } from '../../store/flow-entity';
-import { RootState, Size, FlowEntity } from '../../types';
+import { RootState, Size, FlowEntity, UUID } from '../../types';
 
 const MainComponent = styled('main')(({ theme: { breakpoints } }) => ({
   // https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810
@@ -33,9 +33,10 @@ const MainComponent = styled('main')(({ theme: { breakpoints } }) => ({
 type StateProps = {
   stageSize: Size;
   entities: FlowEntity[];
+  selected?: UUID;
 };
 
-const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities }) => {
+const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected }) => {
   return (
     <MainComponent>
       <ReactReduxContext.Consumer>
@@ -44,7 +45,7 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities }) => {
             <Provider store={store}>
               <Layer>
                 {entities.map((entity) => (
-                  <FlowCard key={entity.id} entity={entity} />
+                  <FlowCard key={entity.id} entity={entity} selected={entity.id === selected} />
                 ))}
               </Layer>
             </Provider>
@@ -56,7 +57,7 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities }) => {
 };
 
 const mapStateToProps = (state: RootState): StateProps => {
-  const { flow } = state.entity;
+  const { flow, selected } = state.entity;
   if (!flow) throw new Error();
   const root = state.entity.entities[flow.rootId];
   if (!root) throw new Error();
@@ -65,7 +66,7 @@ const mapStateToProps = (state: RootState): StateProps => {
   const { stagePadding } = settings;
   const stageSize: Size = { width: tree.width + stagePadding * 2, height: tree.height + stagePadding * 2 };
   const entities = entitySelectors.selectAll(state);
-  return { stageSize, entities };
+  return { stageSize, entities, selected };
 };
 
 export const FlowMain = connect(mapStateToProps)(FlowMainFC);
