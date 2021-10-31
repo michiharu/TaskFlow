@@ -7,6 +7,7 @@ import { cardActionBarHeight, entitySettings } from '../const';
 import { FlowEntity } from '../types';
 
 import FlowCardActionBar from './FlowCardActionBar';
+import FlowCardContent from './FlowCardContent';
 
 type Props = {
   entity: FlowEntity;
@@ -24,6 +25,7 @@ const FlowCard: React.FC<Props> = ({ entity }) => {
       <Rect {...entitySettings.card} fill="#2348" />
       <Rect width={entitySettings.card.width} height={cardActionBarHeight} fill="#6666" />
       <FlowCardActionBar entity={entity} />
+      <FlowCardContent entity={entity} />
     </Group>
   );
 };
