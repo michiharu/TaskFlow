@@ -63,6 +63,9 @@ export const entitySlice = createSlice({
       const calculated = setRect(state);
       adapter.setAll(state, calculated);
     },
+    select(state, { payload: id }: PA<UUID | undefined>) {
+      state.selected = id;
+    },
   },
 });
 
