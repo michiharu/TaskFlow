@@ -6,5 +6,3 @@ export const entitySettings: FlowEntitySettings = {
   m: 40,
   card: { width: 240, height: 100 },
 };
-
-export const cardActionBarHeight = 28;
