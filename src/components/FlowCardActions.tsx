@@ -7,37 +7,57 @@ import { useDispatch } from 'react-redux';
 import { ThemeProvider, Box, IconButton, IconButtonProps, Badge } from '@mui/material';
 
 import {
-  Close as CloseIcon,
   Add as AddIcon,
   ArrowDownward as ArrowDownwardIcon,
+  Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 
-import { cardActionBarHeight as barHeight, cardActionTheme, entitySettings as settings } from '../const';
+import { cardActionTheme, entitySettings as settings } from '../const';
 import { entitySlice } from '../store/flow-entity';
 import { FlowEntity } from '../types';
 
-const iconArea = 26;
-const mx = 4;
+const margin = 4;
 const { card, indent, m } = settings;
+const boxBgcolor = '#444a';
 
 type Props = {
   entity: FlowEntity;
+  selected: boolean;
 };
 
-const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
+const FlowCardActions: React.FC<Props> = ({ entity, selected }) => {
   const dispatch = useDispatch();
   const { id, parent, type, tree, open, direction, childIds } = entity;
   if (!tree) return null;
 
-  const buttonSx: SxProps = { position: 'absolute', top: barHeight / 2, transform: 'translate3d(-50%, -50%, 0)' };
+  const editorBoxProps: SxProps = {
+    position: 'absolute',
+    left: card.width - margin,
+    top: margin,
+    transform: 'translate3d(-100%, 0, 0)',
+    p: 0.5,
+    bgcolor: boxBgcolor,
+    borderRadius: 1,
+  };
+
+  const displayBoxProps: SxProps = {
+    position: 'absolute',
+    left: card.width - margin,
+    top: card.height - margin,
+    transform: 'translate3d(-100%, -100%, 0)',
+    display: 'flex',
+    p: 0.5,
+    bgcolor: boxBgcolor,
+    borderRadius: 1,
+  };
   const transition = 'all 300ms 0s ease';
   const directionTransform = direction === 'horizontal' ? 'rotate(-90deg)' : undefined;
 
   const directionIconButtonProps: IconButtonProps = {
     size: 'small',
-    sx: { ...buttonSx, left: card.width - iconArea * 1.5 - mx },
+    sx: { mr: 0.5 },
     onClick: () => {
       const next = direction !== 'vertical' ? 'vertical' : 'horizontal';
       dispatch(entitySlice.actions.update({ id, changes: { direction: next } }));
@@ -50,7 +70,6 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
   );
   const openCloseIconButtonProps: IconButtonProps = {
     size: 'small',
-    sx: { ...buttonSx, left: card.width - iconArea * 0.5 - mx },
     onClick: () => dispatch(entitySlice.actions.update({ id, changes: { open: !open } })),
   };
   const openCloseIconButton = (
@@ -87,8 +106,19 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
       <Html>
         <ThemeProvider theme={cardActionTheme}>
           <Box sx={{ width: 0, height: 0, position: 'relative' }}>
-            {directionIconButton}
-            {openCloseIconButton}
+            {selected && (
+              <Box sx={editorBoxProps}>
+                <IconButton size="small">
+                  <EditIcon fontSize="inherit" />
+                </IconButton>
+              </Box>
+            )}
+            {selected && (
+              <Box sx={displayBoxProps}>
+                {open && directionIconButton}
+                {openCloseIconButton}
+              </Box>
+            )}
             {addChildIconButton}
           </Box>
         </ThemeProvider>
@@ -97,16 +127,6 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
   }
   if (!parent) throw new Error();
 
-  const closeIconButtonProps: IconButtonProps = {
-    size: 'small',
-    sx: { ...buttonSx, left: iconArea * 0.5 + mx },
-    onClick: () => dispatch(entitySlice.actions.delete({ parentId: parent.id, targetId: id })),
-  };
-  const closeIconButton = (
-    <IconButton {...closeIconButtonProps}>
-      <CloseIcon fontSize="inherit" />
-    </IconButton>
-  );
   const addNextIconButtonProps: IconButtonProps = {
     size: 'small',
     sx: {
@@ -127,9 +147,19 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
     <Html>
       <ThemeProvider theme={cardActionTheme}>
         <Box sx={{ width: 0, height: 0, position: 'relative' }}>
-          {closeIconButton}
-          {directionIconButton}
-          {openCloseIconButton}
+          {selected && (
+            <Box sx={editorBoxProps}>
+              <IconButton size="small">
+                <EditIcon fontSize="inherit" />
+              </IconButton>
+            </Box>
+          )}
+          {selected && (
+            <Box sx={displayBoxProps}>
+              {open && directionIconButton}
+              {openCloseIconButton}
+            </Box>
+          )}
           {addChildIconButton}
           {addNextIconButton}
         </Box>
@@ -138,4 +168,4 @@ const FlowCardActionBar: React.FC<Props> = ({ entity }) => {
   );
 };
 
-export default FlowCardActionBar;
+export default FlowCardActions;

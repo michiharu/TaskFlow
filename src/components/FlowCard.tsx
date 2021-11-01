@@ -7,7 +7,7 @@ import { entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
 import { FlowEntity } from '../types';
 
-import FlowCardActionBar from './FlowCardActionBar';
+import FlowCardActions from './FlowCardActions';
 
 const { card } = entitySettings;
 const space = 8;
@@ -21,10 +21,11 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const dispatch = useDispatch();
   const { id, point, tree, text } = entity;
   if (!point || !tree) return null;
+  const rootGroupProps: React.ComponentProps<typeof Group> = { ...point };
   const treeProps: React.ComponentProps<typeof Rect> = {
     ...tree,
-    onMouseLeave() {
-      if (selected) dispatch(entitySlice.actions.select(undefined));
+    onMouseEnter() {
+      dispatch(entitySlice.actions.select(undefined));
     },
   };
   const cardGroupProps: React.ComponentProps<typeof Group> = {
@@ -43,14 +44,13 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     height: card.height - space * 2,
   };
   return (
-    <Group {...point}>
+    <Group {...rootGroupProps}>
       <Rect {...treeProps} fill="#00aaff08" />
       <Group {...cardGroupProps}>
         <Rect {...cardProps} fill="#2348" />
         <Text {...textProps} fill="#fff" />
       </Group>
-
-      {selected && <FlowCardActionBar entity={entity} />}
+      <FlowCardActions entity={entity} selected={selected} />
     </Group>
   );
 };
