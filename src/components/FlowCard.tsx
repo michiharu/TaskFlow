@@ -136,7 +136,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     bgcolor: boxBgcolor,
     borderRadius: 1,
   };
-  const editIconButtonProps: IconButtonProps = {
+  const editButtonProps: IconButtonProps = {
     size: 'small',
     onClick: () => {
       dispatch(entitySlice.actions.editStart());
@@ -144,7 +144,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   };
   const editButtonBox = selected?.id === id && selected.status === 'selected' && (
     <Box sx={editorBoxProps}>
-      <IconButton {...editIconButtonProps}>
+      <IconButton {...editButtonProps}>
         <EditIcon fontSize="inherit" />
       </IconButton>
     </Box>
@@ -152,7 +152,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
 
   const transition = 'all 300ms 0s ease';
   const directionTransform = direction === 'horizontal' ? 'rotate(-90deg)' : undefined;
-  const directionIconButtonProps: IconButtonProps = {
+  const directionButtonProps: IconButtonProps = {
     size: 'small',
     sx: { mr: 0.5 },
     onClick: () => {
@@ -160,18 +160,18 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.update({ id, changes: { direction: next } }));
     },
   };
-  const directionIconButton = selected?.id === id && selected.status === 'selected' && open && (
-    <IconButton {...directionIconButtonProps}>
+  const directionButton = selected?.id === id && selected.status === 'selected' && open && (
+    <IconButton {...directionButtonProps}>
       <ArrowDownwardIcon fontSize="inherit" sx={{ transition, transform: directionTransform }} />
     </IconButton>
   );
 
-  const openCloseIconButtonProps: IconButtonProps = {
+  const openCloseButtonProps: IconButtonProps = {
     size: 'small',
     onClick: () => dispatch(entitySlice.actions.update({ id, changes: { open: !open } })),
   };
-  const openCloseIconButton = (
-    <IconButton {...openCloseIconButtonProps}>
+  const openCloseButton = (
+    <IconButton {...openCloseButtonProps}>
       {open ? (
         <ExpandLessIcon fontSize="inherit" />
       ) : childIds.length !== 0 ? (
@@ -197,12 +197,12 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const displayBox = ((selected?.status !== 'editing' && !open && childIds.length !== 0) ||
     (selected?.id === id && selected.status === 'selected')) && (
     <Box sx={displayBoxProps}>
-      {directionIconButton}
-      {openCloseIconButton}
+      {directionButton}
+      {openCloseButton}
     </Box>
   );
 
-  const addChildIconButtonProps: IconButtonProps = {
+  const addChildButtonProps: IconButtonProps = {
     size: 'small',
     sx: {
       position: 'absolute',
@@ -212,13 +212,13 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     },
     onClick: () => dispatch(entitySlice.actions.addChild(id)),
   };
-  const addChildIconButton = open && selected?.status !== 'editing' && (
-    <IconButton {...addChildIconButtonProps}>
+  const addChildButton = open && selected?.status !== 'editing' && (
+    <IconButton {...addChildButtonProps}>
       <AddIcon fontSize="inherit" />
     </IconButton>
   );
 
-  const addNextIconButtonProps: IconButtonProps = {
+  const addNextButtonProps: IconButtonProps = {
     size: 'small',
     sx: {
       position: 'absolute',
@@ -231,8 +231,8 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.addNext({ parentId: parent.id, targetId: id }));
     },
   };
-  const addNextIconButton = parent && selected?.status !== 'editing' && (
-    <IconButton {...addNextIconButtonProps}>
+  const addNextButton = parent && selected?.status !== 'editing' && (
+    <IconButton {...addNextButtonProps}>
       <AddIcon fontSize="inherit" />
     </IconButton>
   );
@@ -254,8 +254,8 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
             {editButtonBox}
             {displayBox}
 
-            {addChildIconButton}
-            {addNextIconButton}
+            {addChildButton}
+            {addNextButton}
           </Box>
         </ThemeProvider>
       </Html>
