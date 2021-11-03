@@ -14,6 +14,7 @@ import {
   Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 
 import { cardActionTheme, entitySettings } from '../const';
@@ -35,18 +36,16 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
   const pointRef = React.useRef<Point>();
-  if (!point || !tree) return null;
-
-  if (!pointRef.current) {
-    pointRef.current = point;
-  }
+  if (!pointRef.current && point) pointRef.current = point;
 
   React.useEffect(() => {
-    if (pointRef.current && (pointRef.current.x !== point.x || pointRef.current.y !== point.y)) {
+    if (pointRef.current && point && (pointRef.current.x !== point.x || pointRef.current.y !== point.y)) {
       rootGroupRef.current?.to({ ...point, easing: Konva.Easings.EaseInOut });
       pointRef.current = point;
     }
-  }, [point.x, point.y]);
+  }, [point]);
+
+  if (!point || !tree) return null;
 
   const rootGroupProps: React.ComponentProps<typeof Group> = { ...pointRef.current, ref: rootGroupRef };
   const treeProps: React.ComponentProps<typeof Rect> = {
@@ -74,9 +73,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     width: card.width - space * 2,
     height: card.height - space * 1.5,
   };
-
   const textElement = !(selected?.id === id && selected.status === 'editing') && <Text {...textProps} fill="#fff" />;
-
   const textField = selected?.id === id && selected.status === 'editing' && (
     <TextField
       variant="standard"
@@ -108,6 +105,29 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     </Button>
   );
 
+  const deleteBoxProps: SxProps = {
+    position: 'absolute',
+    left: margin,
+    top: margin,
+    p: 0.5,
+    bgcolor: boxBgcolor,
+    borderRadius: 1,
+  };
+  const deleteButtonProps: IconButtonProps = {
+    size: 'small',
+    onClick: () => {
+      if (!parent) throw new Error();
+      dispatch(entitySlice.actions.delete({ parentId: parent.id, targetId: id }));
+    },
+  };
+  const deleteButtonBox = parent && selected?.id === id && selected.status === 'selected' && (
+    <Box sx={deleteBoxProps}>
+      <IconButton {...deleteButtonProps}>
+        <CloseIcon fontSize="inherit" />
+      </IconButton>
+    </Box>
+  );
+
   const editorBoxProps: SxProps = {
     position: 'absolute',
     left: card.width - margin,
@@ -117,8 +137,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     bgcolor: boxBgcolor,
     borderRadius: 1,
   };
-
-  const editIconButtonProps: IconButtonProps = {
+  const editButtonProps: IconButtonProps = {
     size: 'small',
     onClick: () => {
       dispatch(entitySlice.actions.editStart());
@@ -126,7 +145,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   };
   const editButtonBox = selected?.id === id && selected.status === 'selected' && (
     <Box sx={editorBoxProps}>
-      <IconButton {...editIconButtonProps}>
+      <IconButton {...editButtonProps}>
         <EditIcon fontSize="inherit" />
       </IconButton>
     </Box>
@@ -134,7 +153,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
 
   const transition = 'all 300ms 0s ease';
   const directionTransform = direction === 'horizontal' ? 'rotate(-90deg)' : undefined;
-  const directionIconButtonProps: IconButtonProps = {
+  const directionButtonProps: IconButtonProps = {
     size: 'small',
     sx: { mr: 0.5 },
     onClick: () => {
@@ -142,17 +161,18 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.update({ id, changes: { direction: next } }));
     },
   };
-  const directionIconButton = selected?.id === id && selected.status === 'selected' && open && (
-    <IconButton {...directionIconButtonProps}>
+  const directionButton = selected?.id === id && selected.status === 'selected' && open && (
+    <IconButton {...directionButtonProps}>
       <ArrowDownwardIcon fontSize="inherit" sx={{ transition, transform: directionTransform }} />
     </IconButton>
   );
-  const openCloseIconButtonProps: IconButtonProps = {
+
+  const openCloseButtonProps: IconButtonProps = {
     size: 'small',
     onClick: () => dispatch(entitySlice.actions.update({ id, changes: { open: !open } })),
   };
-  const openCloseIconButton = (
-    <IconButton {...openCloseIconButtonProps}>
+  const openCloseButton = (
+    <IconButton {...openCloseButtonProps}>
       {open ? (
         <ExpandLessIcon fontSize="inherit" />
       ) : childIds.length !== 0 ? (
@@ -175,16 +195,15 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     bgcolor: boxBgcolor,
     borderRadius: 1,
   };
-
   const displayBox = ((selected?.status !== 'editing' && !open && childIds.length !== 0) ||
     (selected?.id === id && selected.status === 'selected')) && (
     <Box sx={displayBoxProps}>
-      {directionIconButton}
-      {openCloseIconButton}
+      {directionButton}
+      {openCloseButton}
     </Box>
   );
 
-  const addChildIconButtonProps: IconButtonProps = {
+  const addChildButtonProps: IconButtonProps = {
     size: 'small',
     sx: {
       position: 'absolute',
@@ -194,13 +213,13 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     },
     onClick: () => dispatch(entitySlice.actions.addChild(id)),
   };
-  const addChildIconButton = open && selected?.status !== 'editing' && (
-    <IconButton {...addChildIconButtonProps}>
+  const addChildButton = open && selected?.status !== 'editing' && (
+    <IconButton {...addChildButtonProps}>
       <AddIcon fontSize="inherit" />
     </IconButton>
   );
 
-  const addNextIconButtonProps: IconButtonProps = {
+  const addNextButtonProps: IconButtonProps = {
     size: 'small',
     sx: {
       position: 'absolute',
@@ -213,8 +232,8 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.addNext({ parentId: parent.id, targetId: id }));
     },
   };
-  const addNextIconButton = parent && selected?.status !== 'editing' && (
-    <IconButton {...addNextIconButtonProps}>
+  const addNextButton = parent && selected?.status !== 'editing' && (
+    <IconButton {...addNextButtonProps}>
       <AddIcon fontSize="inherit" />
     </IconButton>
   );
@@ -232,11 +251,12 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
             {textField}
             {saveButton}
 
+            {deleteButtonBox}
             {editButtonBox}
             {displayBox}
 
-            {addChildIconButton}
-            {addNextIconButton}
+            {addChildButton}
+            {addNextButton}
           </Box>
         </ThemeProvider>
       </Html>
