@@ -8,7 +8,7 @@ import FlexibleStage from '../../components/FlexibleStage';
 import FlowCard from '../../components/FlowCard';
 import { entitySettings as settings } from '../../const';
 import { entitySelectors } from '../../store/flow-entity';
-import { RootState, Size, FlowEntity, UUID } from '../../types';
+import { RootState, Size, FlowEntity, SelectedStatus } from '../../types';
 
 const MainComponent = styled('main')(({ theme: { breakpoints } }) => ({
   // https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810
@@ -33,7 +33,7 @@ const MainComponent = styled('main')(({ theme: { breakpoints } }) => ({
 type StateProps = {
   stageSize: Size;
   entities: FlowEntity[];
-  selected?: UUID;
+  selected?: SelectedStatus;
 };
 
 const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected }) => {
@@ -45,7 +45,7 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected }) => 
             <Provider store={store}>
               <Layer>
                 {entities.map((entity) => (
-                  <FlowCard key={entity.id} entity={entity} selected={entity.id === selected} />
+                  <FlowCard key={entity.id} entity={entity} selected={selected} />
                 ))}
               </Layer>
             </Provider>

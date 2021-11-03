@@ -17,7 +17,6 @@ export const entitySlice = createSlice({
       // reset state
       adapter.removeAll(state);
       state.selected = undefined;
-      state.dragging = undefined;
 
       const { id, title, rootId, entities } = flow;
       state.flow = { id, title, rootId };
@@ -64,7 +63,19 @@ export const entitySlice = createSlice({
       adapter.setAll(state, calculated);
     },
     select(state, { payload: id }: PA<UUID | undefined>) {
-      state.selected = id;
+      if (id) {
+        state.selected = { id, status: 'selected' };
+      } else {
+        state.selected = undefined;
+      }
+    },
+    editStart(state) {
+      if (!state.selected) throw new Error();
+      state.selected.status = 'editing';
+    },
+    editEnd(state) {
+      if (!state.selected) throw new Error();
+      state.selected.status = 'selected';
     },
   },
 });

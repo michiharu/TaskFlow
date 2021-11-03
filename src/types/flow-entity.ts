@@ -16,12 +16,13 @@ type Parent = { id: UUID; direction: Direction };
 export type FlowEntity = BaseEntity & EntityState & RectAttributes & { parent?: Parent };
 export type FlowNode = FlowEntity & { children: FlowNode[] };
 export type FlowEntitySettings = { stagePadding: number; indent: number; m: number; card: Size };
+export type Status = 'selected' | 'editing' | 'dragging';
+export type SelectedStatus = { id: UUID; status: Status };
 export type FlowState = {
   flow?: {
     id: UUID;
     title: string;
     rootId: UUID;
   };
-  selected?: UUID;
-  dragging?: UUID;
+  selected?: SelectedStatus;
 };
