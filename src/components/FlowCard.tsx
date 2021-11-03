@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { SxProps } from '@mui/system';
+import Konva from 'konva';
 import { Group, Rect, Text } from 'react-konva';
 import { Html } from 'react-konva-utils';
 import { useDispatch } from 'react-redux';
@@ -17,7 +18,7 @@ import {
 
 import { cardActionTheme, entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
-import { FlowEntity, SelectedStatus } from '../types';
+import { FlowEntity, Point, SelectedStatus } from '../types';
 
 const { card, indent, m } = entitySettings;
 const space = 7;
@@ -32,9 +33,22 @@ type Props = {
 const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const dispatch = useDispatch();
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
+  const rootGroupRef = React.useRef<Konva.Group>(null);
+  const pointRef = React.useRef<Point>();
   if (!point || !tree) return null;
 
-  const rootGroupProps: React.ComponentProps<typeof Group> = { ...point };
+  if (!pointRef.current) {
+    pointRef.current = point;
+  }
+
+  React.useEffect(() => {
+    if (pointRef.current && (pointRef.current.x !== point.x || pointRef.current.y !== point.y)) {
+      rootGroupRef.current?.to({ ...point, easing: Konva.Easings.EaseInOut });
+      pointRef.current = point;
+    }
+  }, [point.x, point.y]);
+
+  const rootGroupProps: React.ComponentProps<typeof Group> = { ...pointRef.current, ref: rootGroupRef };
   const treeProps: React.ComponentProps<typeof Rect> = {
     ...tree,
     onMouseEnter() {
