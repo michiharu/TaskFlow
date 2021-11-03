@@ -14,6 +14,7 @@ import {
   Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 
 import { cardActionTheme, entitySettings } from '../const';
@@ -36,10 +37,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const rootGroupRef = React.useRef<Konva.Group>(null);
   const pointRef = React.useRef<Point>();
   if (!point || !tree) return null;
-
-  if (!pointRef.current) {
-    pointRef.current = point;
-  }
+  if (!pointRef.current) pointRef.current = point;
 
   React.useEffect(() => {
     if (pointRef.current && (pointRef.current.x !== point.x || pointRef.current.y !== point.y)) {
@@ -74,9 +72,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     width: card.width - space * 2,
     height: card.height - space * 1.5,
   };
-
   const textElement = !(selected?.id === id && selected.status === 'editing') && <Text {...textProps} fill="#fff" />;
-
   const textField = selected?.id === id && selected.status === 'editing' && (
     <TextField
       variant="standard"
@@ -108,6 +104,29 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     </Button>
   );
 
+  const deleteBoxProps: SxProps = {
+    position: 'absolute',
+    left: margin,
+    top: margin,
+    p: 0.5,
+    bgcolor: boxBgcolor,
+    borderRadius: 1,
+  };
+  const deleteButtonProps: IconButtonProps = {
+    size: 'small',
+    onClick: () => {
+      if (!parent) throw new Error();
+      dispatch(entitySlice.actions.delete({ parentId: parent.id, targetId: id }));
+    },
+  };
+  const deleteButtonBox = parent && selected?.id === id && selected.status === 'selected' && (
+    <Box sx={deleteBoxProps}>
+      <IconButton {...deleteButtonProps}>
+        <CloseIcon fontSize="inherit" />
+      </IconButton>
+    </Box>
+  );
+
   const editorBoxProps: SxProps = {
     position: 'absolute',
     left: card.width - margin,
@@ -117,7 +136,6 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     bgcolor: boxBgcolor,
     borderRadius: 1,
   };
-
   const editIconButtonProps: IconButtonProps = {
     size: 'small',
     onClick: () => {
@@ -147,6 +165,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       <ArrowDownwardIcon fontSize="inherit" sx={{ transition, transform: directionTransform }} />
     </IconButton>
   );
+
   const openCloseIconButtonProps: IconButtonProps = {
     size: 'small',
     onClick: () => dispatch(entitySlice.actions.update({ id, changes: { open: !open } })),
@@ -175,7 +194,6 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     bgcolor: boxBgcolor,
     borderRadius: 1,
   };
-
   const displayBox = ((selected?.status !== 'editing' && !open && childIds.length !== 0) ||
     (selected?.id === id && selected.status === 'selected')) && (
     <Box sx={displayBoxProps}>
@@ -232,6 +250,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
             {textField}
             {saveButton}
 
+            {deleteButtonBox}
             {editButtonBox}
             {displayBox}
 
