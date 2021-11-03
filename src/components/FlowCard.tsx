@@ -36,15 +36,16 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
   const pointRef = React.useRef<Point>();
-  if (!point || !tree) return null;
-  if (!pointRef.current) pointRef.current = point;
+  if (!pointRef.current && point) pointRef.current = point;
 
   React.useEffect(() => {
-    if (pointRef.current && (pointRef.current.x !== point.x || pointRef.current.y !== point.y)) {
+    if (pointRef.current && point && (pointRef.current.x !== point.x || pointRef.current.y !== point.y)) {
       rootGroupRef.current?.to({ ...point, easing: Konva.Easings.EaseInOut });
       pointRef.current = point;
     }
-  }, [point.x, point.y]);
+  }, [point]);
+
+  if (!point || !tree) return null;
 
   const rootGroupProps: React.ComponentProps<typeof Group> = { ...pointRef.current, ref: rootGroupRef };
   const treeProps: React.ComponentProps<typeof Rect> = {
