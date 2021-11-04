@@ -35,6 +35,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const dispatch = useDispatch();
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
+  const cardGroupRef = React.useRef<Konva.Group>(null);
   const pointRef = React.useRef<Point>();
   if (!pointRef.current && point) pointRef.current = point;
 
@@ -57,10 +58,40 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     },
   };
   const cardGroupProps: React.ComponentProps<typeof Group> = {
+    ref: cardGroupRef,
+    draggable: !open,
+    onDragStart() {
+      dispatch(entitySlice.actions.dragStart());
+    },
+    onDragMove(e) {
+      console.log(e.currentTarget.x(), e.currentTarget.y());
+    },
+    onDragEnd() {
+      document.body.style.cursor = 'grab';
+      if (cardGroupRef.current)
+        cardGroupRef.current.to({
+          x: 0,
+          y: 0,
+          easing: Konva.Easings.EaseInOut,
+          onFinish() {
+            dispatch(entitySlice.actions.dragEnd());
+          },
+        });
+    },
+    onMouseDown() {
+      if (!open) document.body.style.cursor = 'grabbing';
+    },
+    onMouseUp() {
+      if (!open) document.body.style.cursor = 'grab';
+    },
     onMouseEnter() {
       if (!selected || selected.status === 'selected') {
         dispatch(entitySlice.actions.select(id));
+        if (!open) document.body.style.cursor = 'grab';
       }
+    },
+    onMouseLeave() {
+      document.body.style.cursor = 'default';
     },
   };
   const cardProps: React.ComponentProps<typeof Rect> = { ...card };
@@ -79,6 +110,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       variant="standard"
       sx={{ position: 'absolute', left: 0, top: 0, width: card.width, height: card.height }}
       InputProps={{ sx: { px: 0.87, py: 0.8, fontSize: 14 } }}
+      autoFocus
       multiline
       rows={4}
       value={text}
@@ -195,7 +227,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     bgcolor: boxBgcolor,
     borderRadius: 1,
   };
-  const displayBox = ((selected?.status !== 'editing' && !open && childIds.length !== 0) ||
+  const displayBox = ((!['editing', 'dragging'].includes(selected?.status ?? '') && !open && childIds.length !== 0) ||
     (selected?.id === id && selected.status === 'selected')) && (
     <Box sx={displayBoxProps}>
       {directionButton}

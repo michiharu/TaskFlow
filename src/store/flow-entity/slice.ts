@@ -77,6 +77,18 @@ export const entitySlice = createSlice({
       if (!state.selected) throw new Error();
       state.selected.status = 'selected';
     },
+    dragStart(state) {
+      if (!state.selected) throw new Error();
+      state.selected.status = 'dragging';
+      const { id } = state.selected;
+      adapter.updateOne(state, { id, changes: { open: false } });
+      const calculated = setRect(state);
+      adapter.setAll(state, calculated);
+    },
+    dragEnd(state) {
+      if (!state.selected) throw new Error();
+      state.selected.status = 'selected';
+    },
   },
 });
 
