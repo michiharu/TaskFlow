@@ -30,7 +30,7 @@ export const entitySlice = createSlice({
       if (!parent) throw new Error();
       const id = uuid4();
       parent.childIds.unshift(id);
-      const entity = entityFactory(id);
+      const entity = entityFactory(id, [], { open: false });
       adapter.addOne(state, entity);
 
       const calculated = setRect(state);
@@ -41,7 +41,7 @@ export const entitySlice = createSlice({
       if (!parent) throw new Error();
       const id = uuid4();
       parent.childIds.splice(parent.childIds.indexOf(targetId) + 1, 0, id);
-      const entity = entityFactory(id);
+      const entity = entityFactory(id, [], { open: false });
       adapter.addOne(state, entity);
 
       const calculated = setRect(state);
