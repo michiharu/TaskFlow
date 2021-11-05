@@ -47,6 +47,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   }, [point]);
 
   if (!point || !tree) return null;
+  // if (!point || !tree || (id !== selected?.id && selected?.status === 'dragging')) return null;
 
   const rootGroupProps: React.ComponentProps<typeof Group> = { ...pointRef.current, ref: rootGroupRef };
   const treeProps: React.ComponentProps<typeof Rect> = {
@@ -59,7 +60,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   };
   const cardGroupProps: React.ComponentProps<typeof Group> = {
     ref: cardGroupRef,
-    draggable: !open,
+    draggable: true,
     onDragStart() {
       dispatch(entitySlice.actions.dragStart());
     },
@@ -73,9 +74,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
           x: 0,
           y: 0,
           easing: Konva.Easings.EaseInOut,
-          onFinish() {
-            dispatch(entitySlice.actions.dragEnd());
-          },
+          onFinish: () => dispatch(entitySlice.actions.dragEnd()),
         });
     },
     onMouseDown() {
@@ -83,6 +82,13 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     },
     onMouseUp() {
       if (!open) document.body.style.cursor = 'grab';
+      if (cardGroupRef.current)
+        cardGroupRef.current.to({
+          x: 0,
+          y: 0,
+          easing: Konva.Easings.EaseInOut,
+          onFinish: () => dispatch(entitySlice.actions.dragEnd()),
+        });
     },
     onMouseEnter() {
       if (!selected || selected.status === 'selected') {
@@ -245,7 +251,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     },
     onClick: () => dispatch(entitySlice.actions.addChild(id)),
   };
-  const addChildButton = open && selected?.status !== 'editing' && (
+  const addChildButton = !['editing', 'dragging'].includes(selected?.status ?? '') && open && (
     <IconButton {...addChildButtonProps}>
       <AddIcon fontSize="inherit" />
     </IconButton>
@@ -264,7 +270,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.addNext({ parentId: parent.id, targetId: id }));
     },
   };
-  const addNextButton = parent && selected?.status !== 'editing' && (
+  const addNextButton = parent && !['editing', 'dragging'].includes(selected?.status ?? '') && (
     <IconButton {...addNextButtonProps}>
       <AddIcon fontSize="inherit" />
     </IconButton>
