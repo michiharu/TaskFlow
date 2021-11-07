@@ -12,6 +12,7 @@
     "lint-staged": "lint-staged",
     "prepare": "husky install",
     "serve": "vite preview",
+    "test": "react-scripts test",
     "tsc": "tsc"
   },
   "lint-staged": {
