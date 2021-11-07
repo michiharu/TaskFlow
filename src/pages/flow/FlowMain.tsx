@@ -2,13 +2,18 @@ import * as React from 'react';
 
 import { styled } from '@mui/system';
 import { Layer } from 'react-konva';
+import { Html } from 'react-konva-utils';
 import { ReactReduxContext, Provider, connect } from 'react-redux';
 
+import { Box, ThemeProvider } from '@mui/material';
+
+import AddFlowButton from '../../components/AddFlowButton';
+import DropZone from '../../components/DropZone';
 import FlexibleStage from '../../components/FlexibleStage';
 import FlowCard from '../../components/FlowCard';
-import { entitySettings as settings } from '../../const';
+import { cardActionTheme, entitySettings as settings } from '../../const';
 import { entitySelectors } from '../../store/flow-entity';
-import { RootState, Size, FlowEntity, SelectedStatus } from '../../types';
+import { RootState, Size, FlowEntity, SelectedStatus, AddablePointOfEntity } from '../../types';
 
 const MainComponent = styled('main')(({ theme: { breakpoints } }) => ({
   // https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810
@@ -34,9 +39,10 @@ type StateProps = {
   stageSize: Size;
   entities: FlowEntity[];
   selected?: SelectedStatus;
+  addablePoints: AddablePointOfEntity[];
 };
 
-const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected }) => {
+const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected, addablePoints }) => {
   return (
     <MainComponent>
       <ReactReduxContext.Consumer>
@@ -44,9 +50,21 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected }) => 
           <FlexibleStage stageSize={stageSize}>
             <Provider store={store}>
               <Layer>
+                {['editing', 'dragging'].includes(selected?.status ?? '') &&
+                  addablePoints.map((point, i) => <DropZone key={i} point={point} />)}
                 {entities.map((entity) => (
                   <FlowCard key={entity.id} entity={entity} selected={selected} />
                 ))}
+                <Html>
+                  <ThemeProvider theme={cardActionTheme}>
+                    <Provider store={store}>
+                      <Box sx={{ width: 0, height: 0, position: 'relative' }}>
+                        {!['editing', 'dragging'].includes(selected?.status ?? '') &&
+                          addablePoints.map((point, i) => <AddFlowButton key={i} point={point} />)}
+                      </Box>
+                    </Provider>
+                  </ThemeProvider>
+                </Html>
               </Layer>
             </Provider>
           </FlexibleStage>
@@ -57,7 +75,7 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected }) => 
 };
 
 const mapStateToProps = (state: RootState): StateProps => {
-  const { flow, selected } = state.entity;
+  const { flow, selected, addablePoints } = state.entity;
   if (!flow) throw new Error();
   const root = state.entity.entities[flow.rootId];
   if (!root) throw new Error();
@@ -66,7 +84,7 @@ const mapStateToProps = (state: RootState): StateProps => {
   const { stagePadding } = settings;
   const stageSize: Size = { width: tree.width + stagePadding * 2, height: tree.height + stagePadding * 2 };
   const entities = entitySelectors.selectAll(state);
-  return { stageSize, entities, selected };
+  return { stageSize, entities, selected, addablePoints };
 };
 
 export const FlowMain = connect(mapStateToProps)(FlowMainFC);

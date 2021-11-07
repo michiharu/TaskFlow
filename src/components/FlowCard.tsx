@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import { Badge, Box, Button, IconButton, IconButtonProps, TextField, ThemeProvider } from '@mui/material';
 
 import {
-  Add as AddIcon,
   ArrowDownward as ArrowDownwardIcon,
   Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
@@ -21,7 +20,7 @@ import { cardActionTheme, entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
 import { FlowEntity, Point, SelectedStatus } from '../types';
 
-const { card, indent, m } = entitySettings;
+const { card } = entitySettings;
 const space = 7;
 const margin = 4;
 const boxBgcolor = '#444a';
@@ -60,7 +59,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   };
   const cardGroupProps: React.ComponentProps<typeof Group> = {
     ref: cardGroupRef,
-    draggable: true,
+    draggable: Boolean(parent),
     onDragStart() {
       dispatch(entitySlice.actions.dragStart());
     },
@@ -68,30 +67,32 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       console.log(e.currentTarget.x(), e.currentTarget.y());
     },
     onDragEnd() {
+      console.log('onDragEnd');
       document.body.style.cursor = 'grab';
-      if (cardGroupRef.current)
-        cardGroupRef.current.to({
-          x: 0,
-          y: 0,
-          easing: Konva.Easings.EaseInOut,
-          onFinish: () => dispatch(entitySlice.actions.dragEnd()),
-        });
+      if (!cardGroupRef.current) throw new Error();
+      cardGroupRef.current.to({
+        x: 0,
+        y: 0,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: () => dispatch(entitySlice.actions.dragEnd()),
+      });
     },
     onMouseDown() {
-      if (!open) document.body.style.cursor = 'grabbing';
+      if (!open && Boolean(parent)) document.body.style.cursor = 'grabbing';
     },
     onMouseUp() {
-      if (!open) document.body.style.cursor = 'grab';
-      if (cardGroupRef.current)
-        cardGroupRef.current.to({
-          x: 0,
-          y: 0,
-          easing: Konva.Easings.EaseInOut,
-          onFinish: () => dispatch(entitySlice.actions.dragEnd()),
-        });
+      console.log('onMouseUp');
+      if (!open && Boolean(parent)) document.body.style.cursor = 'grab';
+      if (!cardGroupRef.current) throw new Error();
+      cardGroupRef.current.to({
+        x: 0,
+        y: 0,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: () => dispatch(entitySlice.actions.dragEnd()),
+      });
     },
     onMouseEnter() {
-      if (!selected || selected.status === 'selected') {
+      if ((!selected || selected.status === 'selected') && selected?.id !== id) {
         dispatch(entitySlice.actions.select(id));
         if (!open) document.body.style.cursor = 'grab';
       }
@@ -155,7 +156,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     size: 'small',
     onClick: () => {
       if (!parent) throw new Error();
-      dispatch(entitySlice.actions.delete({ parentId: parent.id, targetId: id }));
+      dispatch(entitySlice.actions.delete(parent));
     },
   };
   const deleteButtonBox = parent && selected?.id === id && selected.status === 'selected' && (
@@ -241,41 +242,6 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     </Box>
   );
 
-  const addChildButtonProps: IconButtonProps = {
-    size: 'small',
-    sx: {
-      position: 'absolute',
-      top: direction === 'vertical' ? card.height + m / 2 : indent * m + card.height / 2,
-      left: direction === 'vertical' ? indent * m + card.width / 2 : card.width + m / 2,
-      transform: 'translate3d(-50%, -50%, 0)',
-    },
-    onClick: () => dispatch(entitySlice.actions.addChild(id)),
-  };
-  const addChildButton = !['editing', 'dragging'].includes(selected?.status ?? '') && open && (
-    <IconButton {...addChildButtonProps}>
-      <AddIcon fontSize="inherit" />
-    </IconButton>
-  );
-
-  const addNextButtonProps: IconButtonProps = {
-    size: 'small',
-    sx: {
-      position: 'absolute',
-      top: parent?.direction === 'vertical' ? tree.height + m / 2 : card.height / 2,
-      left: parent?.direction === 'vertical' ? card.width / 2 : tree.width + m / 2,
-      transform: 'translate3d(-50%, -50%, 0)',
-    },
-    onClick() {
-      if (!parent) throw new Error();
-      dispatch(entitySlice.actions.addNext({ parentId: parent.id, targetId: id }));
-    },
-  };
-  const addNextButton = parent && !['editing', 'dragging'].includes(selected?.status ?? '') && (
-    <IconButton {...addNextButtonProps}>
-      <AddIcon fontSize="inherit" />
-    </IconButton>
-  );
-
   return (
     <Group {...rootGroupProps}>
       <Rect {...treeProps} fill="#00aaff08" />
@@ -292,9 +258,6 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
             {deleteButtonBox}
             {editButtonBox}
             {displayBox}
-
-            {addChildButton}
-            {addNextButton}
           </Box>
         </ThemeProvider>
       </Html>
