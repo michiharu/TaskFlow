@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Dictionary } from '@reduxjs/toolkit';
 
-import { entitySettings as settings } from '../../const';
-import { Point, Size, UUID, FlowEntity, FlowNode } from '../../types';
+import { entitySettings } from '../../const';
+import { Point, Size, UUID, FlowEntity, FlowNode, AddablePointOfEntity, SelectedStatus } from '../../types';
 
 import { FlowEntitySliceState } from './slice';
+
+const { card, indent, m, stagePadding } = entitySettings;
 
 type FactoryOptions = Partial<Omit<FlowEntity, 'id' | 'childIds'>>;
 
@@ -21,7 +23,6 @@ export const entityToTree = (id: UUID, entities: Dictionary<FlowEntity>): FlowNo
 
 export const setTreeSize = (node: FlowNode, visible: boolean): FlowNode => {
   const { direction } = node;
-  const { card, indent, m } = settings;
   if (!visible) {
     const children = node.children.map((c) => setTreeSize(c, false));
     return { ...node, tree: undefined, children };
@@ -54,7 +55,6 @@ export const setTreeSize = (node: FlowNode, visible: boolean): FlowNode => {
 
 export const setPoint = (node: FlowNode, visible: boolean, point: Point): FlowNode => {
   const { direction } = node;
-  const { card, indent, m } = settings;
   if (!visible) {
     const children = node.children.map((c) => setPoint(c, false, point));
     return { ...node, point: undefined, children };
@@ -80,7 +80,9 @@ export const setPoint = (node: FlowNode, visible: boolean, point: Point): FlowNo
 export const nodeToEntities = (node: FlowNode): FlowEntity[] => {
   const { children, ...parent } = node;
   return [parent].concat(
-    children.flatMap((child) => nodeToEntities({ ...child, parent: { id: parent.id, direction: parent.direction } }))
+    children.flatMap((child, index) =>
+      nodeToEntities({ ...child, parent: { id: parent.id, direction: parent.direction, index } })
+    )
   );
 };
 
@@ -88,9 +90,40 @@ export const setRect = (state: FlowEntitySliceState): FlowEntity[] => {
   const { flow, entities } = state;
   if (!flow) throw new Error();
   const { rootId } = flow;
-  if (!rootId || !entities[rootId]) throw new Error();
+  if (!entities[rootId]) throw new Error();
   let root = entityToTree(rootId, entities);
   root = setTreeSize(root, true);
-  root = setPoint(root, true, { x: settings.stagePadding, y: settings.stagePadding });
+  root = setPoint(root, true, { x: stagePadding, y: stagePadding });
   return nodeToEntities(root).map((entity, index) => ({ ...entity, index }));
+};
+
+export const calcAddablePoints = (
+  entities: FlowEntity[],
+  selected: SelectedStatus | undefined
+): AddablePointOfEntity[] => {
+  return entities.flatMap(({ id, point, open, childIds, direction, parent, tree }) => {
+    if (!point || !tree) return [];
+    const points: AddablePointOfEntity[] = [];
+    // as first child
+    if (open && (childIds.length === 0 || childIds[0] !== selected?.id)) {
+      const left = point.x + (direction === 'vertical' ? indent * m + card.width / 2 : card.width + m / 2);
+      const top = point.y + (direction === 'vertical' ? card.height + m / 2 : indent * m + card.height / 2);
+      const x = left - (direction === 'vertical' ? card.width / 2 : m / 2);
+      const y = top - (direction === 'vertical' ? m / 2 : card.height / 2);
+      const width = direction === 'vertical' ? card.width : m;
+      const height = direction === 'vertical' ? m : card.height;
+      points.push({ parent: { id, direction, index: 0 }, left, top, x, y, width, height });
+    }
+    // as next
+    if (parent && selected?.id !== id) {
+      const left = point.x + (parent.direction === 'vertical' ? card.width / 2 : tree.width + m / 2);
+      const top = point.y + (parent.direction === 'vertical' ? tree.height + m / 2 : card.height / 2);
+      const x = left - (direction === 'vertical' ? card.width / 2 : m / 2);
+      const y = top - (direction === 'vertical' ? m / 2 : card.height / 2);
+      const width = direction === 'vertical' ? card.width : m;
+      const height = direction === 'vertical' ? m : card.height;
+      points.push({ parent: { ...parent, index: parent.index + 1 }, left, top, x, y, width, height });
+    }
+    return points;
+  });
 };
