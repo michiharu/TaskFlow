@@ -61,8 +61,8 @@ const FlexibleStage: React.FC<Props> = ({ stageSize, children, refs }) => {
   }, []);
 
   const scrollSize: Size = {
-    width: Math.max(stageSize.width, size.width),
-    height: Math.max(stageSize.height, size.height),
+    width: Math.max(stageSize.width, size.width) + size.width,
+    height: Math.max(stageSize.height, size.height) + size.width,
   };
 
   return (
