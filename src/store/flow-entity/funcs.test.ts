@@ -313,11 +313,12 @@ test('nodeToEntities', () => {
       { ...child3, tree: card, point: child3Point, children: [] },
     ],
   };
+  const rootAsParent = { id: root.id, direction: root.direction, childIds: root.childIds };
   expect(nodeToEntities(node)).toEqual([
     { ...root, tree: rootTree, point: rootPoint },
-    { ...child1, tree: card, point: child1Point, parent: { id: root.id, direction: root.direction, index: 0 } },
-    { ...child2, parent: { id: child1.id, direction: child1.direction, index: 0 } },
-    { ...child3, tree: card, point: child3Point, parent: { id: root.id, direction: root.direction, index: 1 } },
+    { ...child1, tree: card, point: child1Point, parent: { ...rootAsParent, index: 0 } },
+    { ...child2, parent: { id: child1.id, direction: child1.direction, childIds: child1.childIds, index: 0 } },
+    { ...child3, tree: card, point: child3Point, parent: { ...rootAsParent, index: 1 } },
   ]);
 });
 
@@ -340,15 +341,19 @@ describe('setRect', () => {
       index: 1,
       tree: card,
       point: child1Point,
-      parent: { id: root.id, direction: root.direction, index: 0 },
+      parent: { id: root.id, direction: root.direction, childIds: root.childIds, index: 0 },
     },
-    { ...child2, index: 2, parent: { id: child1.id, direction: child1.direction, index: 0 } },
+    {
+      ...child2,
+      index: 2,
+      parent: { id: child1.id, direction: child1.direction, childIds: child1.childIds, index: 0 },
+    },
     {
       ...child3,
       index: 3,
       tree: card,
       point: child3Point,
-      parent: { id: root.id, direction: root.direction, index: 1 },
+      parent: { id: root.id, direction: root.direction, childIds: root.childIds, index: 1 },
     },
   ];
   test('', () => {
