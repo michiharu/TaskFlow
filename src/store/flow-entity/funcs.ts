@@ -80,9 +80,10 @@ export const setPoint = (node: FlowNode, visible: boolean, point: Point): FlowNo
 export const nodeToEntities = (node: FlowNode): FlowEntity[] => {
   const { children, ...parent } = node;
   return [parent].concat(
-    children.flatMap((child, index) =>
-      nodeToEntities({ ...child, parent: { id: parent.id, direction: parent.direction, index } })
-    )
+    children.flatMap((child, index) => {
+      const { id, direction, childIds } = parent;
+      return nodeToEntities({ ...child, parent: { id, direction, childIds, index } });
+    })
   );
 };
 
@@ -105,23 +106,30 @@ export const calcAddablePoints = (
     if (!point || !tree) return [];
     const points: AddablePointOfEntity[] = [];
     // as first child
-    if (open && (childIds.length === 0 || childIds[0] !== selected?.id)) {
+    if (open) {
+      if (selected?.status === 'dragging' && childIds.length !== 0 && selected?.id === childIds[0]) return [];
       const left = point.x + (direction === 'vertical' ? indent * m + card.width / 2 : card.width + m / 2);
       const top = point.y + (direction === 'vertical' ? card.height + m / 2 : indent * m + card.height / 2);
       const x = left - (direction === 'vertical' ? card.width / 2 : m / 2);
       const y = top - (direction === 'vertical' ? m / 2 : card.height / 2);
       const width = direction === 'vertical' ? card.width : m;
       const height = direction === 'vertical' ? m : card.height;
-      points.push({ parent: { id, direction, index: 0 }, left, top, x, y, width, height });
+      points.push({ parent: { id, direction, childIds, index: 0 }, left, top, x, y, width, height });
     }
     // as next
-    if (parent && selected?.id !== id) {
+    if (parent) {
+      if (
+        selected?.status === 'dragging' &&
+        (selected?.id === id ||
+          (parent.index + 1 !== parent.childIds.length && selected?.id === parent.childIds[parent.index + 1]))
+      )
+        return [];
       const left = point.x + (parent.direction === 'vertical' ? card.width / 2 : tree.width + m / 2);
       const top = point.y + (parent.direction === 'vertical' ? tree.height + m / 2 : card.height / 2);
-      const x = left - (direction === 'vertical' ? card.width / 2 : m / 2);
-      const y = top - (direction === 'vertical' ? m / 2 : card.height / 2);
-      const width = direction === 'vertical' ? card.width : m;
-      const height = direction === 'vertical' ? m : card.height;
+      const x = left - (parent.direction === 'vertical' ? card.width / 2 : m / 2);
+      const y = top - (parent.direction === 'vertical' ? m / 2 : card.height / 2);
+      const width = parent.direction === 'vertical' ? card.width : m;
+      const height = parent.direction === 'vertical' ? m : card.height;
       points.push({ parent: { ...parent, index: parent.index + 1 }, left, top, x, y, width, height });
     }
     return points;
