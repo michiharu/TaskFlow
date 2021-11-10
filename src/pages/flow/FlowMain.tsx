@@ -50,10 +50,9 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected, addab
           <FlexibleStage stageSize={stageSize}>
             <Provider store={store}>
               <Layer>
-                {['editing', 'dragging'].includes(selected?.status ?? '') &&
-                  addablePoints.map((point, i) => <DropZone key={i} point={point} />)}
+                {selected?.status === 'dragging' && addablePoints.map((point, i) => <DropZone key={i} point={point} />)}
                 {entities.map((entity) => (
-                  <FlowCard key={entity.id} entity={entity} selected={selected} />
+                  <FlowCard key={entity.id} entity={entity} addablePoints={addablePoints} selectedStatus={selected} />
                 ))}
                 <Html>
                   <ThemeProvider theme={cardActionTheme}>

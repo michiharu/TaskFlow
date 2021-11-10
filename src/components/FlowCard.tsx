@@ -18,19 +18,21 @@ import {
 
 import { cardActionTheme, entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
-import { FlowEntity, Point, SelectedStatus } from '../types';
+import { AddablePointOfEntity, FlowEntity, Point, SelectedStatus } from '../types';
 
 const { card } = entitySettings;
 const space = 7;
 const margin = 4;
 const boxBgcolor = '#444a';
-
+const easing = Konva.Easings.EaseInOut;
+const duration = 0.5;
 type Props = {
   entity: FlowEntity;
-  selected?: SelectedStatus;
+  addablePoints: AddablePointOfEntity[];
+  selectedStatus?: SelectedStatus;
 };
 
-const FlowCard: React.FC<Props> = ({ entity, selected }) => {
+const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) => {
   const dispatch = useDispatch();
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
@@ -38,9 +40,16 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const pointRef = React.useRef<Point>();
   if (!pointRef.current && point) pointRef.current = point;
 
+  const selected = selectedStatus?.id === id && selectedStatus.status === 'selected';
+  const editing = selectedStatus?.id === id && selectedStatus.status === 'editing';
+  const dragging = selectedStatus?.id === id && selectedStatus.status === 'dragging';
+  const moving = selectedStatus?.id === id && selectedStatus.status === 'moving';
+
   React.useEffect(() => {
-    if (pointRef.current && point && (pointRef.current.x !== point.x || pointRef.current.y !== point.y)) {
-      rootGroupRef.current?.to({ ...point, easing: Konva.Easings.EaseInOut });
+    if (!pointRef.current || !point || dragging) return;
+    const changedPoint = pointRef.current.x !== point.x || pointRef.current.y !== point.y;
+    if (changedPoint) {
+      rootGroupRef.current?.to({ ...point, duration, easing });
       pointRef.current = point;
     }
   }, [point]);
@@ -52,47 +61,16 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
   const treeProps: React.ComponentProps<typeof Rect> = {
     ...tree,
     onMouseEnter() {
-      if (selected && selected.status === 'selected') {
-        dispatch(entitySlice.actions.select(undefined));
-      }
+      if (selected) dispatch(entitySlice.actions.select(undefined));
     },
   };
+  const treeRect = !moving && <Rect {...treeProps} fill="#00aaff08" />;
+
   const cardGroupProps: React.ComponentProps<typeof Group> = {
     ref: cardGroupRef,
     draggable: Boolean(parent),
-    onDragStart() {
-      dispatch(entitySlice.actions.dragStart());
-    },
-    onDragMove(e) {
-      console.log(e.currentTarget.x(), e.currentTarget.y());
-    },
-    onDragEnd() {
-      console.log('onDragEnd');
-      document.body.style.cursor = 'grab';
-      if (!cardGroupRef.current) throw new Error();
-      cardGroupRef.current.to({
-        x: 0,
-        y: 0,
-        easing: Konva.Easings.EaseInOut,
-        onFinish: () => dispatch(entitySlice.actions.dragEnd()),
-      });
-    },
-    onMouseDown() {
-      if (!open && Boolean(parent)) document.body.style.cursor = 'grabbing';
-    },
-    onMouseUp() {
-      console.log('onMouseUp');
-      if (!open && Boolean(parent)) document.body.style.cursor = 'grab';
-      if (!cardGroupRef.current) throw new Error();
-      cardGroupRef.current.to({
-        x: 0,
-        y: 0,
-        easing: Konva.Easings.EaseInOut,
-        onFinish: () => dispatch(entitySlice.actions.dragEnd()),
-      });
-    },
     onMouseEnter() {
-      if ((!selected || selected.status === 'selected') && selected?.id !== id) {
+      if (!selectedStatus || (selectedStatus.status === 'selected' && selectedStatus?.id !== id)) {
         dispatch(entitySlice.actions.select(id));
         if (!open) document.body.style.cursor = 'grab';
       }
@@ -100,10 +78,41 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     onMouseLeave() {
       document.body.style.cursor = 'default';
     },
+
+    onMouseDown() {
+      if (!open && Boolean(parent)) document.body.style.cursor = 'grabbing';
+    },
+    onMouseUp() {
+      if (!open && Boolean(parent)) document.body.style.cursor = 'grab';
+      if (!cardGroupRef.current) throw new Error();
+      if (selectedStatus?.status !== 'dragging') return;
+      const onFinish = () => dispatch(entitySlice.actions.finishMoving());
+      cardGroupRef.current.to({ x: 0, y: 0, duration, easing, onFinish });
+      dispatch(entitySlice.actions.dragEnd());
+    },
+
+    onDragStart() {
+      dispatch(entitySlice.actions.dragStart());
+    },
+    onDragMove(e) {
+      if (selectedStatus?.status === 'moving') return;
+      if (!pointRef.current) throw new Error();
+      const x = pointRef.current.x + e.currentTarget.x() + card.width / 2;
+      const y = pointRef.current.y + e.currentTarget.y() + card.height / 2;
+      const addablePoint = addablePoints.find((p) => p.x < x && x < p.x + p.width && p.y < y && y < p.y + p.height);
+      if (addablePoint) dispatch(entitySlice.actions.dragEnter(addablePoint.parent));
+    },
+    onDragEnd() {
+      document.body.style.cursor = 'grab';
+      if (!cardGroupRef.current) throw new Error();
+      const onFinish = () => dispatch(entitySlice.actions.finishMoving());
+      cardGroupRef.current.to({ x: 0, y: 0, duration, easing, onFinish });
+      dispatch(entitySlice.actions.dragEnd());
+    },
   };
   const cardProps: React.ComponentProps<typeof Rect> = { ...card };
   const textProps: React.ComponentProps<typeof Text> = {
-    text,
+    text: id,
     fontSize: 14,
     lineHeight: 1.43,
     x: space,
@@ -111,8 +120,8 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     width: card.width - space * 2,
     height: card.height - space * 1.5,
   };
-  const textElement = !(selected?.id === id && selected.status === 'editing') && <Text {...textProps} fill="#fff" />;
-  const textField = selected?.id === id && selected.status === 'editing' && (
+  const textElement = !editing && <Text {...textProps} fill="#fff" />;
+  const textField = editing && (
     <TextField
       variant="standard"
       sx={{ position: 'absolute', left: 0, top: 0, width: card.width, height: card.height }}
@@ -128,7 +137,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     />
   );
 
-  const saveButton = selected?.id === id && selected.status === 'editing' && (
+  const saveButton = editing && (
     <Button
       variant="contained"
       size="small"
@@ -159,7 +168,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.delete(parent));
     },
   };
-  const deleteButtonBox = parent && selected?.id === id && selected.status === 'selected' && (
+  const deleteButtonBox = parent && selected && (
     <Box sx={deleteBoxProps}>
       <IconButton {...deleteButtonProps}>
         <CloseIcon fontSize="inherit" />
@@ -182,7 +191,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.editStart());
     },
   };
-  const editButtonBox = selected?.id === id && selected.status === 'selected' && (
+  const editButtonBox = selected && (
     <Box sx={editorBoxProps}>
       <IconButton {...editButtonProps}>
         <EditIcon fontSize="inherit" />
@@ -200,7 +209,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
       dispatch(entitySlice.actions.update({ id, changes: { direction: next } }));
     },
   };
-  const directionButton = selected?.id === id && selected.status === 'selected' && open && (
+  const directionButton = selected && open && (
     <IconButton {...directionButtonProps}>
       <ArrowDownwardIcon fontSize="inherit" sx={{ transition, transform: directionTransform }} />
     </IconButton>
@@ -234,8 +243,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
     bgcolor: boxBgcolor,
     borderRadius: 1,
   };
-  const displayBox = ((!['editing', 'dragging'].includes(selected?.status ?? '') && !open && childIds.length !== 0) ||
-    (selected?.id === id && selected.status === 'selected')) && (
+  const displayBox = (selected || (!editing && !dragging && !open && childIds.length !== 0)) && (
     <Box sx={displayBoxProps}>
       {directionButton}
       {openCloseButton}
@@ -244,7 +252,7 @@ const FlowCard: React.FC<Props> = ({ entity, selected }) => {
 
   return (
     <Group {...rootGroupProps}>
-      <Rect {...treeProps} fill="#00aaff08" />
+      {treeRect}
       <Group {...cardGroupProps}>
         <Rect {...cardProps} fill="#2348" />
         {textElement}
