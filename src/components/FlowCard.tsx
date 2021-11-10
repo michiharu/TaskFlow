@@ -24,8 +24,7 @@ const { card } = entitySettings;
 const space = 7;
 const margin = 4;
 const boxBgcolor = '#444a';
-const easing = Konva.Easings.EaseInOut;
-const duration = 0.5;
+const easing = Konva.Easings.EaseOut;
 type Props = {
   entity: FlowEntity;
   addablePoints: AddablePointOfEntity[];
@@ -36,7 +35,6 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
   const dispatch = useDispatch();
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
-  const cardGroupRef = React.useRef<Konva.Group>(null);
   const pointRef = React.useRef<Point>();
   if (!pointRef.current && point) pointRef.current = point;
 
@@ -49,7 +47,7 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
     if (!pointRef.current || !point || dragging) return;
     const changedPoint = pointRef.current.x !== point.x || pointRef.current.y !== point.y;
     if (changedPoint) {
-      rootGroupRef.current?.to({ ...point, duration, easing });
+      rootGroupRef.current?.to({ ...point, easing });
       pointRef.current = point;
     }
   }, [point]);
@@ -57,17 +55,9 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
   if (!point || !tree) return null;
   // if (!point || !tree || (id !== selected?.id && selected?.status === 'dragging')) return null;
 
-  const rootGroupProps: React.ComponentProps<typeof Group> = { ...pointRef.current, ref: rootGroupRef };
-  const treeProps: React.ComponentProps<typeof Rect> = {
-    ...tree,
-    onMouseEnter() {
-      if (selected) dispatch(entitySlice.actions.select(undefined));
-    },
-  };
-  const treeRect = !moving && <Rect {...treeProps} fill="#00aaff08" />;
-
-  const cardGroupProps: React.ComponentProps<typeof Group> = {
-    ref: cardGroupRef,
+  const rootGroupProps: React.ComponentProps<typeof Group> = {
+    ...pointRef.current,
+    ref: rootGroupRef,
     draggable: Boolean(parent),
     onMouseEnter() {
       if (!selectedStatus || (selectedStatus.status === 'selected' && selectedStatus?.id !== id)) {
@@ -84,10 +74,10 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
     },
     onMouseUp() {
       if (!open && Boolean(parent)) document.body.style.cursor = 'grab';
-      if (!cardGroupRef.current) throw new Error();
+      if (!rootGroupRef.current) throw new Error();
       if (selectedStatus?.status !== 'dragging') return;
       const onFinish = () => dispatch(entitySlice.actions.finishMoving());
-      cardGroupRef.current.to({ x: 0, y: 0, duration, easing, onFinish });
+      rootGroupRef.current.to({ ...point, easing, onFinish });
       dispatch(entitySlice.actions.dragEnd());
     },
 
@@ -97,19 +87,27 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
     onDragMove(e) {
       if (selectedStatus?.status === 'moving') return;
       if (!pointRef.current) throw new Error();
-      const x = pointRef.current.x + e.currentTarget.x() + card.width / 2;
-      const y = pointRef.current.y + e.currentTarget.y() + card.height / 2;
+      const x = e.currentTarget.x() + card.width / 2;
+      const y = e.currentTarget.y() + card.height / 2;
       const addablePoint = addablePoints.find((p) => p.x < x && x < p.x + p.width && p.y < y && y < p.y + p.height);
       if (addablePoint) dispatch(entitySlice.actions.dragEnter(addablePoint.parent));
     },
     onDragEnd() {
       document.body.style.cursor = 'grab';
-      if (!cardGroupRef.current) throw new Error();
+      if (!rootGroupRef.current) throw new Error();
       const onFinish = () => dispatch(entitySlice.actions.finishMoving());
-      cardGroupRef.current.to({ x: 0, y: 0, duration, easing, onFinish });
+      rootGroupRef.current.to({ ...point, easing, onFinish });
       dispatch(entitySlice.actions.dragEnd());
     },
   };
+  const treeProps: React.ComponentProps<typeof Rect> = {
+    ...tree,
+    onMouseEnter() {
+      if (selected) dispatch(entitySlice.actions.select(undefined));
+    },
+  };
+  const treeRect = !moving && <Rect {...treeProps} fill="#00aaff08" />;
+
   const cardProps: React.ComponentProps<typeof Rect> = { ...card };
   const textProps: React.ComponentProps<typeof Text> = {
     text: id,
@@ -253,10 +251,8 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
   return (
     <Group {...rootGroupProps}>
       {treeRect}
-      <Group {...cardGroupProps}>
-        <Rect {...cardProps} fill="#2348" />
-        {textElement}
-      </Group>
+      <Rect {...cardProps} fill="#2348" />
+      {textElement}
       <Html>
         <ThemeProvider theme={cardActionTheme}>
           <Box sx={{ width: 0, height: 0, position: 'relative' }}>
