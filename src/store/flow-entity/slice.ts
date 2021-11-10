@@ -29,9 +29,9 @@ export const entitySlice = createSlice({
     add(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
       const parentEntity = state.entities[parent.id];
       if (!parentEntity) throw new Error();
-      const id = uuid4();
-      parentEntity.childIds.splice(parent.index, 0, id);
-      const entity = entityFactory(id, [], { open: false });
+      const newId = uuid4();
+      parentEntity.childIds.splice(parent.index, 0, newId);
+      const entity = entityFactory(newId, [], { open: false });
       adapter.addOne(state, entity);
 
       const calculated = setRect(state);
@@ -48,8 +48,7 @@ export const entitySlice = createSlice({
     delete(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
       const parentEntity = state.entities[parent.id];
       if (!parentEntity) throw new Error();
-      const id = parentEntity.childIds[parent.index];
-      parentEntity.childIds.splice(parent.index, 1);
+      const id = parentEntity.childIds.splice(parent.index, 1)[0];
       adapter.removeOne(state, id);
 
       const calculated = setRect(state);
@@ -76,30 +75,71 @@ export const entitySlice = createSlice({
       state.selected.status = 'dragging';
       const { id } = state.selected;
       adapter.updateOne(state, { id, changes: { open: false } });
+
       const calculated = setRect(state);
       adapter.setAll(state, calculated);
       state.addablePoints = calcAddablePoints(calculated, state.selected);
     },
-    dragEnter(state, { payload: { parentId, index } }: PA<{ parentId: UUID; index: number }>) {
+    dragEnter(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
       if (!state.selected) throw new Error();
       const selectedEntity = state.entities[state.selected.id];
       if (!selectedEntity || !selectedEntity.parent) throw new Error();
 
-      // move to
-      const toParent = state.entities[parentId];
-      if (!toParent) throw new Error();
-      toParent.childIds.splice(index, 0, selectedEntity.id);
+      if (selectedEntity.parent.id === parent.id) {
+        const parentEntity = state.entities[parent.id];
+        if (!parentEntity) throw new Error();
+        if (selectedEntity.parent.index < parent.index) {
+          parentEntity.childIds.splice(parent.index, 0, selectedEntity.id);
+          parentEntity.childIds.splice(selectedEntity.parent.index, 1);
+        } else {
+          parentEntity.childIds.splice(selectedEntity.parent.index, 1);
+          parentEntity.childIds.splice(parent.index, 0, selectedEntity.id);
+        }
+      } else {
+        // move to
+        const toParent = state.entities[parent.id];
+        if (!toParent) throw new Error();
+        toParent.childIds.splice(parent.index, 0, selectedEntity.id);
 
-      // move from
-      const fromParent = state.entities[selectedEntity.parent.id];
-      if (!fromParent) throw new Error();
-      const id = uuid4();
-      state.selected.placeholderId = id;
-      fromParent.childIds.splice(selectedEntity.parent.index, 1, id);
-      const entity = entityFactory(id, [], { open: false });
-      adapter.addOne(state, entity);
+        // move from
+        const fromParent = state.entities[selectedEntity.parent.id];
+        if (!fromParent) throw new Error();
+
+        if (!state.selected.placeholder) {
+          // set placeholder
+          const id = uuid4();
+          state.selected.placeholder = { id, parentId: selectedEntity.parent.id };
+          fromParent.childIds.splice(selectedEntity.parent.index, 1, id);
+          const entity = entityFactory(id, [], { open: false });
+          adapter.addOne(state, entity);
+        } else {
+          // remove childId
+          fromParent.childIds.splice(selectedEntity.parent.index, 1);
+        }
+      }
+
+      const calculated = setRect(state);
+      adapter.setAll(state, calculated);
+      state.addablePoints = calcAddablePoints(calculated, state.selected);
     },
     dragEnd(state) {
+      if (!state.selected) throw new Error();
+      state.selected.status = 'moving';
+
+      const placeholder = state.selected.placeholder;
+      if (placeholder) {
+        const parent = state.entities[placeholder.parentId];
+        if (!parent) throw new Error();
+        parent.childIds.splice(parent.childIds.indexOf(placeholder.id), 1);
+        adapter.removeOne(state, placeholder.id);
+        state.selected.placeholder = undefined;
+      }
+
+      const calculated = setRect(state);
+      adapter.setAll(state, calculated);
+      state.addablePoints = calcAddablePoints(calculated, state.selected);
+    },
+    finishMoving(state) {
       if (!state.selected) throw new Error();
       state.selected.status = 'selected';
     },
