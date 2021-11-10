@@ -105,9 +105,10 @@ export const calcAddablePoints = (
   return entities.flatMap(({ id, point, open, childIds, direction, parent, tree }) => {
     if (!point || !tree) return [];
     const points: AddablePointOfEntity[] = [];
+    const dragging = selected?.status === 'dragging';
+
     // as first child
-    if (open) {
-      if (selected?.status === 'dragging' && childIds.length !== 0 && selected?.id === childIds[0]) return [];
+    if (open && (!dragging || selected?.id !== childIds[0])) {
       const left = point.x + (direction === 'vertical' ? indent * m + card.width / 2 : card.width + m / 2);
       const top = point.y + (direction === 'vertical' ? card.height + m / 2 : indent * m + card.height / 2);
       const x = left - (direction === 'vertical' ? card.width / 2 : m / 2);
@@ -117,13 +118,9 @@ export const calcAddablePoints = (
       points.push({ parent: { id, direction, childIds, index: 0 }, left, top, x, y, width, height });
     }
     // as next
-    if (parent) {
-      if (
-        selected?.status === 'dragging' &&
-        (selected?.id === id ||
-          (parent.index + 1 !== parent.childIds.length && selected?.id === parent.childIds[parent.index + 1]))
-      )
-        return [];
+    const isBefore = parent?.childIds[parent?.index] === selected?.id;
+    const isNext = parent?.childIds[parent.index + 1] === selected?.id;
+    if (parent && !(dragging && isBefore) && !(dragging && isNext)) {
       const left = point.x + (parent.direction === 'vertical' ? card.width / 2 : tree.width + m / 2);
       const top = point.y + (parent.direction === 'vertical' ? tree.height + m / 2 : card.height / 2);
       const x = left - (parent.direction === 'vertical' ? card.width / 2 : m / 2);
