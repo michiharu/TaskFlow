@@ -7,7 +7,7 @@ import { IconButton } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
 import { entitySlice } from '../store/flow-entity';
-import { AddablePointOfEntity } from '../types';
+import type { AddablePointOfEntity } from '../types/flow-entity';
 
 type Props = {
   point: AddablePointOfEntity;

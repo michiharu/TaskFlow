@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Rect } from 'react-konva';
 
-import { AddablePointOfEntity } from '../types';
+import type { AddablePointOfEntity } from '../types/flow-entity';
 
 type Props = {
   point: AddablePointOfEntity;

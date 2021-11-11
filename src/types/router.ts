@@ -1,6 +1,6 @@
 import { matchSelectorFn } from 'connected-react-router';
 
-import { RootState } from '.';
+import type { RootState } from './store';
 
 export type Page = { path: string };
 export type PageWithParams<Params extends { [K in keyof Params]?: string }> = {

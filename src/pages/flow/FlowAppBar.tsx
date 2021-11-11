@@ -1,5 +1,3 @@
 import * as React from 'react';
 
-export const FlowAppBar: React.FC = () => {
-  return <></>;
-};
+export const FlowAppBar: React.FC = () => null;

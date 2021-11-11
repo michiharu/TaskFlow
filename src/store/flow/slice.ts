@@ -1,7 +1,7 @@
-import { createEntityAdapter, createSlice, PayloadAction as PA } from '@reduxjs/toolkit';
+import { PayloadAction as PA, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 
-import { Flow } from '../../types/flow';
-import { RootState } from '../setup-store';
+import type { Flow } from '../../types/flow';
+import type { RootState } from '../../types/store';
 
 const adapter = createEntityAdapter<Flow>();
 const initialState = adapter.getInitialState();

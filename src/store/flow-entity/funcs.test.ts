@@ -1,16 +1,17 @@
 import { entitySettings as settings } from '../../const';
-import { Point, Size, FlowEntity, FlowNode, UUID } from '../../types';
+import { UUID } from '../../types/common';
+import type { FlowEntity, FlowNode, Point, Size } from '../../types/flow-entity';
 
 import { entityToTree, nodeToEntities, setPoint, setRect, setTreeSize } from './funcs';
 import { FlowEntitySliceState } from './slice';
 import {
-  rootOnlyEntities,
-  flatEntities,
-  nestedEntities,
   closedEntities,
+  flatEntities,
   horizontalEntities,
   nestedClosedEntities,
+  nestedEntities,
   rootId,
+  rootOnlyEntities,
 } from './test-data';
 
 const { card, indent, m, stagePadding } = settings;

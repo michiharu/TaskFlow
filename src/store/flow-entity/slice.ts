@@ -1,7 +1,10 @@
-import { createEntityAdapter, createSlice, Update, PayloadAction as PA } from '@reduxjs/toolkit';
+import { PayloadAction as PA, Update, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 
 import { uuid4 } from '../../funcs/utils';
-import { Flow, FlowEntity, FlowState, Parent, RootState, UUID } from '../../types';
+import { UUID } from '../../types/common';
+import type { Flow } from '../../types/flow';
+import type { FlowEntity, FlowState, Parent } from '../../types/flow-entity';
+import type { RootState } from '../../types/store';
 
 import { calcAddablePoints, entityFactory, setRect } from './funcs';
 
@@ -126,7 +129,7 @@ export const entitySlice = createSlice({
       if (!state.selected) throw new Error();
       state.selected.status = 'moving';
 
-      const placeholder = state.selected.placeholder;
+      const { placeholder } = state.selected;
       if (placeholder) {
         const parent = state.entities[placeholder.parentId];
         if (!parent) throw new Error();

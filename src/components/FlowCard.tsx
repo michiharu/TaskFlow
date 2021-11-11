@@ -10,15 +10,15 @@ import { Badge, Box, Button, IconButton, IconButtonProps, TextField, ThemeProvid
 
 import {
   ArrowDownward as ArrowDownwardIcon,
-  Edit as EditIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
   Close as CloseIcon,
+  Edit as EditIcon,
+  ExpandLess as ExpandLessIcon,
+  ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 
 import { cardActionTheme, entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
-import { AddablePointOfEntity, FlowEntity, Point, SelectedStatus } from '../types';
+import { AddablePointOfEntity, FlowEntity, Point, SelectedStatus } from '../types/flow-entity';
 
 const { card } = entitySettings;
 const space = 7;
@@ -217,18 +217,16 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
     size: 'small',
     onClick: () => dispatch(entitySlice.actions.update({ id, changes: { open: !open } })),
   };
-  const openCloseButton = (
-    <IconButton {...openCloseButtonProps}>
-      {open ? (
-        <ExpandLessIcon fontSize="inherit" />
-      ) : childIds.length !== 0 ? (
-        <Badge color="primary" variant="dot">
-          <ExpandMoreIcon fontSize="inherit" />
-        </Badge>
-      ) : (
+  const expandMore =
+    childIds.length !== 0 ? (
+      <Badge color="primary" variant="dot">
         <ExpandMoreIcon fontSize="inherit" />
-      )}
-    </IconButton>
+      </Badge>
+    ) : (
+      <ExpandMoreIcon fontSize="inherit" />
+    );
+  const openCloseButton = (
+    <IconButton {...openCloseButtonProps}>{open ? <ExpandLessIcon fontSize="inherit" /> : expandMore}</IconButton>
   );
 
   const displayBoxProps: SxProps = {
