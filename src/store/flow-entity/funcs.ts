@@ -2,9 +2,10 @@
 import { Dictionary } from '@reduxjs/toolkit';
 
 import { entitySettings } from '../../const';
-import { Point, Size, UUID, FlowEntity, FlowNode, AddablePointOfEntity, SelectedStatus } from '../../types';
+import type { UUID } from '../../types/common';
+import type { AddablePointOfEntity, FlowEntity, FlowNode, Point, SelectedStatus, Size } from '../../types/flow-entity';
 
-import { FlowEntitySliceState } from './slice';
+import type { FlowEntitySliceState } from './slice';
 
 const { card, indent, m, stagePadding } = entitySettings;
 
@@ -35,22 +36,20 @@ export const setTreeSize = (node: FlowNode, visible: boolean): FlowNode => {
     if (direction === 'vertical') {
       const tree: Size = { width: indent * m + card.width, height: card.height + m };
       return { ...node, tree };
-    } else {
-      const tree: Size = { width: card.width + m, height: indent * m + card.height };
-      return { ...node, tree };
     }
+    const tree: Size = { width: card.width + m, height: indent * m + card.height };
+    return { ...node, tree };
   }
   if (direction === 'vertical') {
     const children = node.children.map((c) => setTreeSize(c, true));
     const width = indent * m + Math.max(...children.map((c) => c.tree!.width)) + m;
     const height = card.height + m + children.map((c) => c.tree!.height + m).reduce((a, b) => a + b);
     return { ...node, tree: { width, height }, children };
-  } else {
-    const children = node.children.map((c) => setTreeSize(c, true));
-    const width = card.width + m + children.map((c) => c.tree!.width + m).reduce((a, b) => a + b);
-    const height = indent * m + Math.max(...children.map((c) => c.tree!.height)) + m;
-    return { ...node, tree: { width, height }, children };
   }
+  const children = node.children.map((c) => setTreeSize(c, true));
+  const width = card.width + m + children.map((c) => c.tree!.width + m).reduce((a, b) => a + b);
+  const height = indent * m + Math.max(...children.map((c) => c.tree!.height)) + m;
+  return { ...node, tree: { width, height }, children };
 };
 
 export const setPoint = (node: FlowNode, visible: boolean, point: Point): FlowNode => {
@@ -101,8 +100,8 @@ export const setRect = (state: FlowEntitySliceState): FlowEntity[] => {
 export const calcAddablePoints = (
   entities: FlowEntity[],
   selected: SelectedStatus | undefined
-): AddablePointOfEntity[] => {
-  return entities.flatMap(({ id, point, open, childIds, direction, parent, tree }) => {
+): AddablePointOfEntity[] =>
+  entities.flatMap(({ id, point, open, childIds, direction, parent, tree }) => {
     if (!point || !tree) return [];
     const points: AddablePointOfEntity[] = [];
     const dragging = selected?.status === 'dragging';
@@ -131,4 +130,3 @@ export const calcAddablePoints = (
     }
     return points;
   });
-};

@@ -1,4 +1,4 @@
-import { UUID } from '../../types';
+import { UUID } from '../../types/common';
 import { FlowEntity } from '../../types/flow-entity';
 
 import { entityFactory } from './funcs';

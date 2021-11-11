@@ -3,7 +3,7 @@ import { uuid4 } from './utils';
 describe('uuid4', () => {
   const count = 100_000;
   const ids: Set<string> = new Set();
-  for (let i = 0; i < count; i++) ids.add(uuid4());
+  for (let i = 0; i < count; i += 1) ids.add(uuid4());
 
   test('id should be unique.', () => {
     expect(ids.size).toBe(count);
@@ -16,6 +16,6 @@ describe('uuid4', () => {
     expect(re.test('12345678-9abc-0def-9000-000000000000')).toBe(false);
     expect(re.test('12345678-9abc-4def-0000-000000000000')).toBe(false);
     expect(re.test('12345678-9abc-4def-f000-000000000000')).toBe(false);
-    for (const id in ids) expect(re.test(id)).toBe(true);
+    ids.forEach((id) => expect(re.test(id)).toBe(true));
   });
 });
