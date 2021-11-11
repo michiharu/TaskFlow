@@ -11,17 +11,15 @@ import App from './App';
 import { theme } from './const';
 import { history, store } from './store/setup-store';
 
-const Providers: React.FC = () => {
-  return (
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <App />
-        </ThemeProvider>
-      </ConnectedRouter>
-    </Provider>
-  );
-};
+const Providers: React.FC = () => (
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </ConnectedRouter>
+  </Provider>
+);
 
 render(<Providers />, document.querySelector('#root'));

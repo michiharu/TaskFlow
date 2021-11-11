@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { styled, alpha } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import { AppBar as MuiAppBar, Box, Button, Divider, InputBase, Toolbar } from '@mui/material';
+import { Box, Button, Divider, InputBase, AppBar as MuiAppBar, Toolbar } from '@mui/material';
 
 import { Search as SearchIcon } from '@mui/icons-material';
 
@@ -51,39 +51,36 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const AppBar: React.FC = () => {
+const AppBar: React.FC = () => (
   // Referenced page
   // https://mui.com/components/app-bar/#app-bar-with-a-primary-search-field
-  return (
-    <MuiAppBar position="static">
-      <Toolbar>
-        <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-          <Button component={Link} to={topPage.path} size="large">
-            Task Flow
-          </Button>
-          <Divider orientation="vertical" flexItem variant="middle" sx={{ mx: 1 }} />
-        </Box>
+  <MuiAppBar position="static">
+    <Toolbar>
+      <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        <Button component={Link} to={topPage.path} size="large">
+          Task Flow
+        </Button>
+        <Divider orientation="vertical" flexItem variant="middle" sx={{ mx: 1 }} />
+      </Box>
 
-        <Switch>
-          <Route path={topPage.path} exact>
-            <TopAppBar />
-          </Route>
-          <Route path={flowPage.path}>
-            <FlowAppBar />
-          </Route>
-        </Switch>
+      <Switch>
+        <Route path={topPage.path} exact>
+          <TopAppBar />
+        </Route>
+        <Route path={flowPage.path}>
+          <FlowAppBar />
+        </Route>
+      </Switch>
 
-        <Box sx={{ flexGrow: 1, pl: 1 }} />
+      <Box sx={{ flexGrow: 1, pl: 1 }} />
 
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
-        </Search>
-      </Toolbar>
-    </MuiAppBar>
-  );
-};
-
+      <Search>
+        <SearchIconWrapper>
+          <SearchIcon />
+        </SearchIconWrapper>
+        <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+      </Search>
+    </Toolbar>
+  </MuiAppBar>
+);
 export default AppBar;

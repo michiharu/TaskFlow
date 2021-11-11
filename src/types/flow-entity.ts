@@ -1,4 +1,4 @@
-import { UUID } from '.';
+import type { UUID } from './common';
 
 export type Point = { x: number; y: number };
 export type Size = { width: number; height: number };
@@ -13,13 +13,14 @@ type SwitchState = BaseState & { type: 'switch'; selectedIndex?: string };
 type EntityState = BaseState | SwitchState;
 type RectAttributes = { point?: Point; tree?: Size };
 export type Parent = { id: UUID; direction: Direction; childIds: UUID[]; index: number };
-export type FlowEntity = BaseEntity & EntityState & RectAttributes & { parent?: Parent };
+export type FlowEntity = BaseEntity & EntityState & RectAttributes & { parent?: Parent; depth?: number };
 export type FlowNode = FlowEntity & { children: FlowNode[] };
 
 export type FlowEntitySettings = { stagePadding: number; indent: number; m: number; card: Size };
 export type Status = 'selected' | 'editing' | 'dragging' | 'moving';
 export type SelectedStatus = { id: UUID; status: Status; placeholder?: { id: UUID; parentId: UUID } };
 export type AddablePointOfEntity = { parent: Parent; left: number; top: number } & Point & Size;
+export type TreePointOfEntity = { id: UUID } & Point & Size;
 
 export type FlowState = {
   flow?: {

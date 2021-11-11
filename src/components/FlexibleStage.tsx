@@ -5,7 +5,7 @@ import { Stage } from 'react-konva';
 
 import { Box } from '@mui/material';
 
-import { Size } from '../types';
+import type { Size } from '../types/flow-entity';
 
 type Props = {
   stageSize: Size;
@@ -49,7 +49,7 @@ const FlexibleStage: React.FC<Props> = ({ stageSize, children, refs }) => {
       if (containerRef.current && stageRef.current) {
         const dx = containerRef.current.scrollLeft;
         const dy = containerRef.current.scrollTop;
-        stageRef.current.container().style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+        stageRef.current.container().style.transform = `translate(${dx}px, ${dy}px)`;
         stageRef.current.x(-dx);
         stageRef.current.y(-dy);
       }
@@ -68,7 +68,7 @@ const FlexibleStage: React.FC<Props> = ({ stageSize, children, refs }) => {
   return (
     <Box ref={containerCallbackRef} sx={{ width: '100%', height: '100%', overflow: 'auto' }}>
       <Box sx={{ ...scrollSize, overflow: 'hidden' }}>
-        <Stage ref={stageCallbackRef} {...size}>
+        <Stage ref={stageCallbackRef} width={size.width} height={size.height}>
           {children}
         </Stage>
       </Box>

@@ -1,10 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Dictionary } from '@reduxjs/toolkit';
+import type { Dictionary, EntityState } from '@reduxjs/toolkit';
 
 import { entitySettings } from '../../const';
-import { Point, Size, UUID, FlowEntity, FlowNode, AddablePointOfEntity, SelectedStatus } from '../../types';
-
-import { FlowEntitySliceState } from './slice';
+import type { UUID } from '../../types/common';
+import type {
+  AddablePointOfEntity,
+  FlowEntity,
+  FlowNode,
+  FlowState,
+  Point,
+  SelectedStatus,
+  Size,
+  TreePointOfEntity,
+} from '../../types/flow-entity';
 
 const { card, indent, m, stagePadding } = entitySettings;
 
@@ -35,22 +43,20 @@ export const setTreeSize = (node: FlowNode, visible: boolean): FlowNode => {
     if (direction === 'vertical') {
       const tree: Size = { width: indent * m + card.width, height: card.height + m };
       return { ...node, tree };
-    } else {
-      const tree: Size = { width: card.width + m, height: indent * m + card.height };
-      return { ...node, tree };
     }
+    const tree: Size = { width: card.width + m, height: indent * m + card.height };
+    return { ...node, tree };
   }
   if (direction === 'vertical') {
     const children = node.children.map((c) => setTreeSize(c, true));
     const width = indent * m + Math.max(...children.map((c) => c.tree!.width)) + m;
     const height = card.height + m + children.map((c) => c.tree!.height + m).reduce((a, b) => a + b);
     return { ...node, tree: { width, height }, children };
-  } else {
-    const children = node.children.map((c) => setTreeSize(c, true));
-    const width = card.width + m + children.map((c) => c.tree!.width + m).reduce((a, b) => a + b);
-    const height = indent * m + Math.max(...children.map((c) => c.tree!.height)) + m;
-    return { ...node, tree: { width, height }, children };
   }
+  const children = node.children.map((c) => setTreeSize(c, true));
+  const width = card.width + m + children.map((c) => c.tree!.width + m).reduce((a, b) => a + b);
+  const height = indent * m + Math.max(...children.map((c) => c.tree!.height)) + m;
+  return { ...node, tree: { width, height }, children };
 };
 
 export const setPoint = (node: FlowNode, visible: boolean, point: Point): FlowNode => {
@@ -77,17 +83,17 @@ export const setPoint = (node: FlowNode, visible: boolean, point: Point): FlowNo
   return { ...node, point, children };
 };
 
-export const nodeToEntities = (node: FlowNode): FlowEntity[] => {
+export const nodeToEntities = (node: FlowNode, depth = 0): FlowEntity[] => {
   const { children, ...parent } = node;
   return [parent].concat(
     children.flatMap((child, index) => {
       const { id, direction, childIds } = parent;
-      return nodeToEntities({ ...child, parent: { id, direction, childIds, index } });
+      return nodeToEntities({ ...child, parent: { id, direction, childIds, index }, depth }, depth + 1);
     })
   );
 };
 
-export const setRect = (state: FlowEntitySliceState): FlowEntity[] => {
+export const setRect = (state: EntityState<FlowEntity> & FlowState): FlowEntity[] => {
   const { flow, entities } = state;
   if (!flow) throw new Error();
   const { rootId } = flow;
@@ -101,8 +107,8 @@ export const setRect = (state: FlowEntitySliceState): FlowEntity[] => {
 export const calcAddablePoints = (
   entities: FlowEntity[],
   selected: SelectedStatus | undefined
-): AddablePointOfEntity[] => {
-  return entities.flatMap(({ id, point, open, childIds, direction, parent, tree }) => {
+): AddablePointOfEntity[] =>
+  entities.flatMap(({ id, point, open, childIds, direction, parent, tree }) => {
     if (!point || !tree) return [];
     const points: AddablePointOfEntity[] = [];
     const dragging = selected?.status === 'dragging';
@@ -131,4 +137,15 @@ export const calcAddablePoints = (
     }
     return points;
   });
-};
+
+export const calcTreePoints = (entities: FlowEntity[]): TreePointOfEntity[] =>
+  entities
+    .slice()
+    .sort((a, b) => {
+      if (a.depth === undefined || b.depth === undefined) throw new Error();
+      return a.depth < b.depth ? 1 : -1;
+    })
+    .map(({ id, point, tree, depth }) => {
+      if (!point || !tree || depth === undefined) throw new Error();
+      return { id, ...tree, ...point, depth };
+    });

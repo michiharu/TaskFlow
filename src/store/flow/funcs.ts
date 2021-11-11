@@ -1,5 +1,5 @@
 import { uuid4 } from '../../funcs/utils';
-import { Flow } from '../../types/flow';
+import type { Flow } from '../../types/flow';
 import { entityFactory } from '../flow-entity/funcs';
 
 export const flowFactory = (title: string): Flow => {

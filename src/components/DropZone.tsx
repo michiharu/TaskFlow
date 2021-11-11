@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Rect } from 'react-konva';
 
-import { AddablePointOfEntity } from '../types';
+import type { AddablePointOfEntity } from '../types/flow-entity';
 
 type Props = {
   point: AddablePointOfEntity;
@@ -10,8 +10,7 @@ type Props = {
 
 const DropZone: React.FC<Props> = ({ point }) => {
   const { x, y, width, height } = point;
-  const props = { x, y, width, height };
-  return <Rect {...props} fill="#00ff5510" />;
+  return <Rect x={x} y={y} width={width} height={height} fill="#00ff5510" />;
 };
 
 export default DropZone;

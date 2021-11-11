@@ -6,6 +6,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
+    'airbnb',
     'airbnb-typescript',
     'prettier',
   ],
@@ -22,11 +23,10 @@ module.exports = {
   },
   rules: {
     'max-len': ['error', { code: 120 }],
-    'react/jsx-uses-react': 'off',
-    'react/react-in-jsx-scope': 'off',
-
-    '@typescript-eslint/explicit-module-boundary-types': ['error'],
-    'import/no-extraneous-dependencies': 'off',
+    'react/require-default-props': 'off', // defaultProps は使用しない
+    'react/jsx-props-no-spreading': 'off', // propsのスプレッド構文の使用OK
+    'import/no-extraneous-dependencies': 'off', // package.jsonに列挙されていないpkgからのimportはOK
+    'import/prefer-default-export': 'off', // default exportは無くてもOK
   },
   overrides: [
     {
@@ -36,9 +36,15 @@ module.exports = {
       },
     },
     {
-      // import を sort するため、AutoFix をかける範囲で設定を上書く
+      files: ['*slice.ts'],
+      rules: {
+        'no-param-reassign': 'off', // immerを使用しているので再代入OK
+      },
+    },
+    {
       files: ['src/**/*.{js,jsx,ts,tsx}'],
       rules: {
+        "sort-imports": ["error", { "ignoreDeclarationSort": true }],
         'import/order': [
           'error',
           {

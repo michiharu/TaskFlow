@@ -1,5 +1,5 @@
-import { UUID } from '../../types';
-import { FlowEntity } from '../../types/flow-entity';
+import type { UUID } from '../../types/common';
+import type { FlowEntity } from '../../types/flow-entity';
 
 import { entityFactory } from './funcs';
 

@@ -1,4 +1,4 @@
-import { FlowEntitySettings } from '../types/flow-entity';
+import type { FlowEntitySettings } from '../types/flow-entity';
 
 export const entitySettings: FlowEntitySettings = {
   stagePadding: 16,
@@ -6,3 +6,5 @@ export const entitySettings: FlowEntitySettings = {
   m: 40,
   card: { width: 240, height: 94 },
 };
+
+export default entitySettings;

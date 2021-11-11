@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { put, select, take } from '@redux-saga/core/effects';
-import { PayloadAction as PA } from '@reduxjs/toolkit';
+import type { PayloadAction as PA } from '@reduxjs/toolkit';
 
-import { Flow } from '../../types';
+import type { Flow } from '../../types/flow';
 import { entitySelectors } from '../flow-entity';
-import { RootState } from '../setup-store';
+import type { RootState } from '../setup-store';
 
 import { flowSlice } from './slice';
 
@@ -32,7 +32,7 @@ export function* sync() {
     const { type }: { type: string } = yield take('*');
     if (type.startsWith('flow-entity')) {
       const state: RootState = yield select();
-      const flow = state.entity.flow;
+      const { flow } = state.entity;
       if (!flow) throw new Error();
       const entities = entitySelectors.selectAll(state);
       yield put(flowSlice.actions.set({ ...flow, entities }));
