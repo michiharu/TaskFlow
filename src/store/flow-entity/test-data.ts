@@ -10,7 +10,9 @@ const childId3 = '12345678-9abc-4def-9000-000000000003' as UUID;
 
 type Entities = { [key in string]: FlowEntity };
 
-export const rootOnlyEntities: Entities = { root: entityFactory(rootId, [], { type: 'root' }) };
+export const rootOnlyEntities: Entities = {
+  root: entityFactory(rootId, [], { type: 'root' }),
+};
 
 export const flatEntities: Entities = {
   root: entityFactory(rootId, [childId1, childId2, childId3], { type: 'root' }),
@@ -34,7 +36,10 @@ export const closedEntities: Entities = {
 };
 
 export const horizontalEntities: Entities = {
-  root: entityFactory(rootId, [childId1, childId3], { type: 'root', direction: 'horizontal' }),
+  root: entityFactory(rootId, [childId1, childId3], {
+    type: 'root',
+    direction: 'horizontal',
+  }),
   child1: entityFactory(childId1, [childId2], { direction: 'horizontal' }),
   child2: entityFactory(childId2),
   child3: entityFactory(childId3, [], { direction: 'horizontal' }),

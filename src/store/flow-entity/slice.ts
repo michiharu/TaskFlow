@@ -6,10 +6,13 @@ import type { Flow } from '../../types/flow';
 import type { FlowEntity, FlowState, Parent } from '../../types/flow-entity';
 import type { RootState } from '../../types/store';
 
-import { calcAddablePoints, entityFactory, setRect } from './funcs';
+import { calculate, entityFactory } from './funcs';
 
-const adapter = createEntityAdapter<FlowEntity>({ sortComparer: (a, b) => a.index - b.index });
-const initialState = adapter.getInitialState<FlowState>({ addablePoints: [] });
+export const adapter = createEntityAdapter<FlowEntity>();
+const initialState = adapter.getInitialState<FlowState>({
+  addablePoints: [],
+  dropZones: [],
+});
 export type FlowEntitySliceState = typeof initialState;
 
 export const entitySlice = createSlice({
@@ -25,9 +28,7 @@ export const entitySlice = createSlice({
       state.flow = { id, title, rootId };
       adapter.setAll(state, entities);
 
-      const calculated = setRect(state);
-      adapter.setAll(state, calculated);
-      state.addablePoints = calcAddablePoints(calculated, state.selected);
+      calculate(state, adapter);
     },
     add(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
       const parentEntity = state.entities[parent.id];
@@ -37,16 +38,12 @@ export const entitySlice = createSlice({
       const entity = entityFactory(newId, [], { open: false });
       adapter.addOne(state, entity);
 
-      const calculated = setRect(state);
-      adapter.setAll(state, calculated);
-      state.addablePoints = calcAddablePoints(calculated, state.selected);
+      calculate(state, adapter);
     },
     update(state, { payload }: PA<Update<FlowEntity>>) {
       adapter.updateOne(state, payload);
 
-      const calculated = setRect(state);
-      adapter.setAll(state, calculated);
-      state.addablePoints = calcAddablePoints(calculated, state.selected);
+      calculate(state, adapter);
     },
     delete(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
       const parentEntity = state.entities[parent.id];
@@ -54,9 +51,7 @@ export const entitySlice = createSlice({
       const id = parentEntity.childIds.splice(parent.index, 1)[0];
       adapter.removeOne(state, id);
 
-      const calculated = setRect(state);
-      adapter.setAll(state, calculated);
-      state.addablePoints = calcAddablePoints(calculated, state.selected);
+      calculate(state, adapter);
     },
     select(state, { payload: id }: PA<UUID | undefined>) {
       if (id) {
@@ -64,14 +59,20 @@ export const entitySlice = createSlice({
       } else {
         state.selected = undefined;
       }
+
+      calculate(state, adapter);
     },
     editStart(state) {
       if (!state.selected) throw new Error();
       state.selected.status = 'editing';
+
+      calculate(state, adapter);
     },
     editEnd(state) {
       if (!state.selected) throw new Error();
       state.selected.status = 'selected';
+
+      calculate(state, adapter);
     },
     dragStart(state) {
       if (!state.selected) throw new Error();
@@ -79,9 +80,7 @@ export const entitySlice = createSlice({
       const { id } = state.selected;
       adapter.updateOne(state, { id, changes: { open: false } });
 
-      const calculated = setRect(state);
-      adapter.setAll(state, calculated);
-      state.addablePoints = calcAddablePoints(calculated, state.selected);
+      calculate(state, adapter);
     },
     dragEnter(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
       if (!state.selected) throw new Error();
@@ -107,44 +106,22 @@ export const entitySlice = createSlice({
         // move from
         const fromParent = state.entities[selectedEntity.parent.id];
         if (!fromParent) throw new Error();
-
-        if (!state.selected.placeholder) {
-          // set placeholder
-          const id = uuid4();
-          state.selected.placeholder = { id, parentId: selectedEntity.parent.id };
-          fromParent.childIds.splice(selectedEntity.parent.index, 1, id);
-          const entity = entityFactory(id, [], { open: false });
-          adapter.addOne(state, entity);
-        } else {
-          // remove childId
-          fromParent.childIds.splice(selectedEntity.parent.index, 1);
-        }
+        fromParent.childIds.splice(selectedEntity.parent.index, 1);
       }
 
-      const calculated = setRect(state);
-      adapter.setAll(state, calculated);
-      state.addablePoints = calcAddablePoints(calculated, state.selected);
+      calculate(state, adapter);
     },
     dragEnd(state) {
       if (!state.selected) throw new Error();
       state.selected.status = 'moving';
 
-      const { placeholder } = state.selected;
-      if (placeholder) {
-        const parent = state.entities[placeholder.parentId];
-        if (!parent) throw new Error();
-        parent.childIds.splice(parent.childIds.indexOf(placeholder.id), 1);
-        adapter.removeOne(state, placeholder.id);
-        state.selected.placeholder = undefined;
-      }
-
-      const calculated = setRect(state);
-      adapter.setAll(state, calculated);
-      state.addablePoints = calcAddablePoints(calculated, state.selected);
+      calculate(state, adapter);
     },
     finishMoving(state) {
       if (!state.selected) throw new Error();
       state.selected.status = 'selected';
+
+      calculate(state, adapter);
     },
   },
 });
