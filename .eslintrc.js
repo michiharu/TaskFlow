@@ -11,24 +11,21 @@ module.exports = {
     'plugin:import/typescript',
     'prettier',
   ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaFeatures: { jsx: true },
-    ecmaVersion: 2020,
-    sourceType: 'module',
-  },
-  plugins: ['react', '@typescript-eslint', 'import'],
-  settings: {
-    react: { version: 'detect' },
-    'import/resolver': { typescript: { alwaysTryTypes: true } },
-  },
   rules: {
     'max-len': ['error', { code: 120 }],
-    'react/require-default-props': 'off', // defaultProps は使用しない
-    'react/jsx-props-no-spreading': 'off', // propsのスプレッド構文の使用OK
-    'react/function-component-definition': 'off', // [2, { namedComponents: 'arrow-function' }],
-    'import/no-extraneous-dependencies': 'off', // package.jsonに列挙されていないpkgからのimportはOK
-    'import/prefer-default-export': 'off', // default exportは無くてもOK
+    // # Components
+    // componentはarrow関数で
+    'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
+    // propsのスプレッド構文の使用OK
+    'react/jsx-props-no-spreading': 'off',
+    // defaultProps は使用しない
+    'react/require-default-props': 'off',
+
+    // # Modules
+    // package.jsonに列挙されていなくてもimportはOK
+    'import/no-extraneous-dependencies': 'off',
+    // default exportは無くてもOK
+    'import/prefer-default-export': 'off',
   },
   overrides: [
     {
@@ -36,15 +33,6 @@ module.exports = {
       parserOptions: {
         project: ['./tsconfig.json'],
       },
-    },
-    {
-      files: ['*slice.ts'],
-      rules: {
-        'no-param-reassign': 'off', // immerを使用しているので再代入OK
-      },
-    },
-    {
-      files: ['src/**/*.{js,jsx,ts,tsx}'],
       rules: {
         'sort-imports': ['error', { ignoreDeclarationSort: true }],
         'import/order': [
@@ -78,6 +66,12 @@ module.exports = {
             },
           },
         ],
+      },
+    },
+    {
+      files: ['*slice.ts'],
+      rules: {
+        'no-param-reassign': 'off', // immerを使用しているので再代入OK
       },
     },
   ],
