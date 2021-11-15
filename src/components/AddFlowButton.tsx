@@ -7,10 +7,10 @@ import { IconButton } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
 import { entitySlice } from '../store/flow-entity';
-import type { AddablePointOfEntity } from '../types/flow-entity';
+import type { AddablePoint } from '../types/flow-entity';
 
 type Props = {
-  point: AddablePointOfEntity;
+  point: AddablePoint;
 };
 
 const AddFlowButton: React.FC<Props> = ({ point }) => {
