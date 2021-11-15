@@ -18,7 +18,7 @@ import {
 
 import { cardActionTheme, entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
-import { AddablePointOfEntity, FlowEntity, Point, SelectedStatus } from '../types/flow-entity';
+import { DropZone, FlowEntity, Point, SelectedStatus } from '../types/flow-entity';
 
 const { card } = entitySettings;
 const space = 7;
@@ -27,11 +27,11 @@ const boxBgcolor = '#444a';
 const easing = Konva.Easings.EaseOut;
 type Props = {
   entity: FlowEntity;
-  addablePoints: AddablePointOfEntity[];
+  dropZones: DropZone[];
   selectedStatus?: SelectedStatus;
 };
 
-const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) => {
+const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
   const dispatch = useDispatch();
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
@@ -86,11 +86,14 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
     },
     onDragMove(e) {
       if (selectedStatus?.status === 'moving') return;
-      if (!pointRef.current) throw new Error();
+      if (!parent || !pointRef.current) throw new Error();
       const x = e.currentTarget.x() + card.width / 2;
       const y = e.currentTarget.y() + card.height / 2;
-      const addablePoint = addablePoints.find((p) => p.x < x && x < p.x + p.width && p.y < y && y < p.y + p.height);
-      if (addablePoint) dispatch(entitySlice.actions.dragEnter(addablePoint.parent));
+      const zone = dropZones.find((p) => p.x < x && x < p.x + p.width && p.y < y && y < p.y + p.height);
+      const index = parent.childIds.indexOf(id);
+      if (zone && (zone.parent.id !== parent.id || (zone.parent.index !== index && zone.parent.index - 1 !== index))) {
+        dispatch(entitySlice.actions.dragEnter(zone.parent));
+      }
     },
     onDragEnd() {
       document.body.style.cursor = 'grab';
@@ -110,7 +113,7 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
 
   const cardProps: React.ComponentProps<typeof Rect> = { ...card };
   const textProps: React.ComponentProps<typeof Text> = {
-    text: id,
+    text: id.slice(0, 8),
     fontSize: 14,
     lineHeight: 1.43,
     x: space,
@@ -122,7 +125,13 @@ const FlowCard: React.FC<Props> = ({ entity, addablePoints, selectedStatus }) =>
   const textField = editing && (
     <TextField
       variant="standard"
-      sx={{ position: 'absolute', left: 0, top: 0, width: card.width, height: card.height }}
+      sx={{
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: card.width,
+        height: card.height,
+      }}
       InputProps={{ sx: { px: 0.87, py: 0.8, fontSize: 14 } }}
       autoFocus
       multiline
