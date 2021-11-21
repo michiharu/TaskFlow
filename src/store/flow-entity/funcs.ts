@@ -4,7 +4,7 @@ import { Dictionary, EntityAdapter } from '@reduxjs/toolkit';
 
 import { entitySettings } from '../../const';
 import type { UUID } from '../../types/common';
-import type { AddablePoint, DropZone, FlowEntity, FlowNode, Point } from '../../types/flow-entity';
+import type { AddablePoint, DropZone, FlowEntity, FlowNode, Parent, Point, Size } from '../../types/flow-entity';
 
 import type { FlowEntitySliceState } from './slice';
 
@@ -17,13 +17,17 @@ export const entityFactory = (id: UUID, childIds: UUID[] = [], options: FactoryO
   return { id, childIds, flowIndex, type, direction, open, text };
 };
 
-export const entityToTree = (id: UUID, entities: Dictionary<FlowEntity>): FlowNode => {
+export const entityToTree = (id: UUID, entities: Dictionary<FlowEntity>, parent?: Parent): FlowNode => {
   const entity = entities[id];
   if (!entity) throw new Error();
-  const children = entity.childIds.map((childId) => entityToTree(childId, entities));
+  const { direction, childIds } = entity;
+  const children = entity.childIds.map((childId, index) =>
+    entityToTree(childId, entities, { id, direction, childIds, index })
+  );
   return {
     ...entity,
     children,
+    parent,
     tree: undefined,
     point: undefined,
     addable: undefined,
@@ -65,9 +69,8 @@ export const setPoint = (node: FlowNode, point: Point): FlowNode => {
   return { ...node, point, children };
 };
 
-export const setAddable = (node: FlowNode, parent?: FlowNode, depth = 0): FlowNode => {
-  const children = node.children.map((c) => setAddable(c, node, depth + 1));
-  if (!node.point || !node.tree) return { ...node, children };
+export const setAddable = (node: FlowNode, parentNode: FlowNode | undefined, depth = 0): FlowNode => {
+  if (!node.point || !node.tree) return node;
 
   const points: AddablePoint[] = [];
   const zones: DropZone[] = [];
@@ -75,56 +78,36 @@ export const setAddable = (node: FlowNode, parent?: FlowNode, depth = 0): FlowNo
   // as first child
   if (node.open) {
     const { id, point, direction, childIds, tree } = node;
+    const parent = { id, direction, childIds, index: 0 };
 
     const left = point.x + (direction === 'vertical' ? indent * m + card.width / 2 : card.width + m / 2);
     const top = point.y + (direction === 'horizontal' ? indent * m + card.height / 2 : card.height + m / 2);
-    points.push({ parent: { id, direction, childIds, index: 0 }, left, top });
+    points.push({ parent, left, top });
 
     const x = point.x + (direction === 'vertical' ? 0 : card.width / 2);
     const y = point.y + (direction === 'horizontal' ? 0 : card.height / 2);
     const width = direction === 'vertical' ? tree.width : card.width + m;
     const height = direction === 'horizontal' ? tree.height : card.height + m;
-    zones.push({
-      parent: { id, direction, childIds, index: 0 },
-      from: node.id,
-      depth: depth + 1,
-      x,
-      y,
-      width,
-      height,
-    });
+    zones.push({ parent, from: id, depth: depth + 1, x, y, width, height });
   }
 
   // as next
-  if (parent) {
-    const { id, point, direction, childIds, tree } = parent;
+  if (parentNode) {
+    const { id, point, direction, childIds, tree } = parentNode;
     if (!point || !tree) throw new Error();
-
-    const nextIndex = childIds.indexOf(node.id) + 1;
+    const parent = { id, direction, childIds, index: childIds.indexOf(node.id) + 1 };
 
     const left = node.point.x + (direction === 'vertical' ? card.width / 2 : node.tree.width + m / 2);
     const top = node.point.y + (direction === 'horizontal' ? card.height / 2 : node.tree.height + m / 2);
-    points.push({
-      parent: { id, direction, childIds, index: nextIndex },
-      left,
-      top,
-    });
+    points.push({ parent, left, top });
 
     const x = direction === 'vertical' ? point.x : node.point.x + node.tree.width - card.width * 0.5;
     const y = direction === 'horizontal' ? point.y : node.point.y + node.tree.height - card.height * 0.5;
     const width = direction === 'vertical' ? tree.width : card.width + m;
     const height = direction === 'horizontal' ? tree.height : card.height + m;
-
-    zones.push({
-      parent: { id, direction, childIds, index: nextIndex },
-      from: node.id,
-      depth,
-      x,
-      y,
-      width,
-      height,
-    });
+    zones.push({ parent, from: node.id, depth, x, y, width, height });
   }
+  const children = node.children.map((c) => setAddable(c, node, depth + 1));
   return { ...node, addable: { points, zones }, children };
 };
 
