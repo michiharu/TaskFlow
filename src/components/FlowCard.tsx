@@ -25,10 +25,21 @@ const space = 7;
 const margin = 4;
 const boxBgcolor = '#444a';
 const easing = Konva.Easings.EaseOut;
+
+type DraggingHistory = Point & { time: number };
+
 type Props = {
   entity: FlowEntity;
   dropZones: DropZone[];
   selectedStatus?: SelectStatus;
+};
+
+const predictPointDiff = (h: DraggingHistory[]): Point | undefined => {
+  if (h.length < 2) return undefined;
+  const first = h[0];
+  const last = h[h.length - 1];
+  const duration = (first.time - last.time) / 400;
+  return { x: (first.x - last.x) / duration, y: (first.y - last.y) / duration };
 };
 
 const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
@@ -36,6 +47,7 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
   const pointRef = React.useRef<Point>();
+  const historyRef = React.useRef<DraggingHistory[]>([]);
   if (!pointRef.current && point) pointRef.current = point;
 
   const selected = selectedStatus?.id === id && selectedStatus.status === 'selected';
@@ -51,6 +63,27 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
       pointRef.current = point;
     }
   }, [point]);
+
+  React.useEffect(() => {
+    let timer: number | undefined;
+    const stamp = () => {
+      if (rootGroupRef.current && pointRef.current) {
+        const x = rootGroupRef.current.x() - pointRef.current.x;
+        const y = rootGroupRef.current.y() - pointRef.current.y;
+        const time = Date.now();
+        historyRef.current = historyRef.current
+          .concat({ x, y, time })
+          .sort((a, b) => b.time - a.time)
+          .slice(0, 12);
+      }
+    };
+    if (dragging) {
+      if (!timer) timer = window.setInterval(stamp, 60);
+    } else {
+      historyRef.current = [];
+    }
+    return () => window.clearInterval(timer);
+  }, [dragging]);
 
   if (!point || !tree) return null;
   // if (!point || !tree || (id !== selected?.id && selected?.status === 'dragging')) return null;
@@ -87,8 +120,9 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
     onDragMove(e) {
       if (selectedStatus?.status === 'moving') return;
       if (!parent || !pointRef.current) throw new Error();
-      const x = e.currentTarget.x() + card.width / 2;
-      const y = e.currentTarget.y() + card.height / 2;
+      const d = predictPointDiff(historyRef.current);
+      const x = e.currentTarget.x() + card.width / 2 + (d?.x ?? 0);
+      const y = e.currentTarget.y() + card.height / 2 + (d?.y ?? 0);
       const zone = dropZones.find((p) => p.x < x && x < p.x + p.width && p.y < y && y < p.y + p.height);
       const index = parent.childIds.indexOf(id);
       if (zone && (zone.parent.id !== parent.id || (zone.parent.index !== index && zone.parent.index - 1 !== index))) {
