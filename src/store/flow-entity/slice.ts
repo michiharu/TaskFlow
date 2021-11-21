@@ -50,7 +50,7 @@ export const entitySlice = createSlice({
       if (!parentEntity) throw new Error();
       const id = parentEntity.childIds.splice(parent.index, 1)[0];
       adapter.removeOne(state, id);
-
+      state.selected = undefined;
       calculate(state, adapter);
     },
     select(state, { payload: id }: PA<UUID | undefined>) {

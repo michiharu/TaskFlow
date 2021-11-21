@@ -13,7 +13,7 @@ import FlexibleStage from '../../components/FlexibleStage';
 import FlowCard from '../../components/FlowCard';
 import { cardActionTheme, entitySettings as settings } from '../../const';
 import { entitySelectors } from '../../store/flow-entity';
-import type { AddablePoint, DropZone, FlowEntity, SelectedStatus, Size } from '../../types/flow-entity';
+import type { AddablePoint, DropZone, FlowEntity, SelectStatus, Size } from '../../types/flow-entity';
 import type { RootState } from '../../types/store';
 
 const MainComponent = styled('main')(({ theme: { breakpoints } }) => ({
@@ -39,7 +39,7 @@ const MainComponent = styled('main')(({ theme: { breakpoints } }) => ({
 type StateProps = {
   stageSize: Size;
   entities: FlowEntity[];
-  selected?: SelectedStatus;
+  selected?: SelectStatus;
   addablePoints: AddablePoint[];
   dropZones: DropZone[];
 };

@@ -18,7 +18,7 @@ import {
 
 import { cardActionTheme, entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
-import { DropZone, FlowEntity, Point, SelectedStatus } from '../types/flow-entity';
+import { DropZone, FlowEntity, Point, SelectStatus } from '../types/flow-entity';
 
 const { card } = entitySettings;
 const space = 7;
@@ -28,7 +28,7 @@ const easing = Konva.Easings.EaseOut;
 type Props = {
   entity: FlowEntity;
   dropZones: DropZone[];
-  selectedStatus?: SelectedStatus;
+  selectedStatus?: SelectStatus;
 };
 
 const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
@@ -113,7 +113,7 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
 
   const cardProps: React.ComponentProps<typeof Rect> = { ...card };
   const textProps: React.ComponentProps<typeof Text> = {
-    text: id.slice(0, 8),
+    text: `${id.slice(0, 8)}`,
     fontSize: 14,
     lineHeight: 1.43,
     x: space,
