@@ -2,11 +2,11 @@ import { createMatchSelector } from 'connected-react-router';
 
 import type { FlowPage, TopPage } from '../types/router';
 
-export const topPage: TopPage = { path: '/' };
+export const topPage: TopPage = { path: '/TaskFlow/' };
 
-const flowPath = '/flow/:id';
+const flowPath = '/TaskFlow/flow/:id';
 export const flowPage: FlowPage = {
   path: flowPath,
-  url: (params) => `/flow/${params.id}`,
+  url: (params) => `/TaskFlow/flow/${params.id}`,
   matchSelector: createMatchSelector(flowPath),
 };
