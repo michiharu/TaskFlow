@@ -107,7 +107,7 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
     },
     onMouseUp() {
       if (!open && Boolean(parent)) document.body.style.cursor = 'grab';
-      if (!rootGroupRef.current) throw new Error();
+      if (!rootGroupRef.current) return;
       if (selectedStatus?.status !== 'dragging') return;
       const onFinish = () => dispatch(entitySlice.actions.finishMoving());
       rootGroupRef.current.to({ ...point, easing, onFinish });
@@ -119,7 +119,7 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
     },
     onDragMove(e) {
       if (selectedStatus?.status === 'moving') return;
-      if (!parent || !pointRef.current) throw new Error();
+      if (!parent || !pointRef.current) return;
       const d = predictPointDiff(historyRef.current);
       const x = e.currentTarget.x() + card.width / 2 + (d?.x ?? 0);
       const y = e.currentTarget.y() + card.height / 2 + (d?.y ?? 0);
@@ -131,7 +131,7 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
     },
     onDragEnd() {
       document.body.style.cursor = 'grab';
-      if (!rootGroupRef.current) throw new Error();
+      if (!rootGroupRef.current) return;
       const onFinish = () => dispatch(entitySlice.actions.finishMoving());
       rootGroupRef.current.to({ ...point, easing, onFinish });
       dispatch(entitySlice.actions.dragEnd());
@@ -147,7 +147,7 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
 
   const cardProps: React.ComponentProps<typeof Rect> = { ...card };
   const textProps: React.ComponentProps<typeof Text> = {
-    text: `${id.slice(0, 8)}`,
+    text,
     fontSize: 14,
     lineHeight: 1.43,
     x: space,
