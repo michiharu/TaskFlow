@@ -18,7 +18,8 @@ import {
 
 import { cardActionTheme, entitySettings } from '../const';
 import { entitySlice } from '../store/flow-entity';
-import { DropZone, FlowEntity, Point, SelectStatus } from '../types/flow-entity';
+import { UUID } from '../types/common';
+import { DropZone, FlowEntity, Parent, Point, SelectStatus } from '../types/flow-entity';
 
 const { card } = entitySettings;
 const space = 7;
@@ -26,7 +27,18 @@ const margin = 4;
 const boxBgcolor = '#444a';
 const easing = Konva.Easings.EaseOut;
 
-type DraggingHistory = Point & { time: number };
+const findZoneFromCenterOfCard = (dropZones: DropZone[], { x, y }: Point) =>
+  dropZones.find((p) => p.x < x && x < p.x + p.width && p.y < y && y < p.y + p.height);
+
+type DragMoveAction = 'none' | 'reset' | 'reserve';
+
+const dragMoveAction = (zone: DropZone, parent: Parent, id: UUID): DragMoveAction => {
+  if (zone.reserved) return 'none';
+  if (zone.parent.id !== parent.id) return 'reserve';
+  const index = parent.childIds.indexOf(id);
+  if (zone.parent.index !== index && zone.parent.index - 1 !== index) return 'reserve';
+  return 'reset';
+};
 
 type Props = {
   entity: FlowEntity;
@@ -34,20 +46,11 @@ type Props = {
   selectedStatus?: SelectStatus;
 };
 
-const predictPointDiff = (h: DraggingHistory[]): Point | undefined => {
-  if (h.length < 2) return undefined;
-  const first = h[0];
-  const last = h[h.length - 1];
-  const duration = (first.time - last.time) / 400;
-  return { x: (first.x - last.x) / duration, y: (first.y - last.y) / duration };
-};
-
 const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
   const dispatch = useDispatch();
   const { id, parent, point, tree, open, direction, childIds, text } = entity;
   const rootGroupRef = React.useRef<Konva.Group>(null);
   const pointRef = React.useRef<Point>();
-  const historyRef = React.useRef<DraggingHistory[]>([]);
   if (!pointRef.current && point) pointRef.current = point;
 
   const selected = selectedStatus?.id === id && selectedStatus.status === 'selected';
@@ -63,27 +66,6 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
       pointRef.current = point;
     }
   }, [point]);
-
-  React.useEffect(() => {
-    let timer: number | undefined;
-    const stamp = () => {
-      if (rootGroupRef.current && pointRef.current) {
-        const x = rootGroupRef.current.x() - pointRef.current.x;
-        const y = rootGroupRef.current.y() - pointRef.current.y;
-        const time = Date.now();
-        historyRef.current = historyRef.current
-          .concat({ x, y, time })
-          .sort((a, b) => b.time - a.time)
-          .slice(0, 12);
-      }
-    };
-    if (dragging) {
-      if (!timer) timer = window.setInterval(stamp, 60);
-    } else {
-      historyRef.current = [];
-    }
-    return () => window.clearInterval(timer);
-  }, [dragging]);
 
   if (!point || !tree) return null;
   // if (!point || !tree || (id !== selected?.id && selected?.status === 'dragging')) return null;
@@ -120,13 +102,20 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
     onDragMove(e) {
       if (selectedStatus?.status === 'moving') return;
       if (!parent || !pointRef.current) return;
-      const d = predictPointDiff(historyRef.current);
-      const x = e.currentTarget.x() + card.width / 2 + (d?.x ?? 0);
-      const y = e.currentTarget.y() + card.height / 2 + (d?.y ?? 0);
-      const zone = dropZones.find((p) => p.x < x && x < p.x + p.width && p.y < y && y < p.y + p.height);
-      const index = parent.childIds.indexOf(id);
-      if (zone && (zone.parent.id !== parent.id || (zone.parent.index !== index && zone.parent.index - 1 !== index))) {
-        dispatch(entitySlice.actions.dragEnter(zone.parent));
+      const x = e.currentTarget.x() + card.width / 2;
+      const y = e.currentTarget.y() + card.height / 2;
+      const zone = findZoneFromCenterOfCard(dropZones, { x, y });
+      if (!zone) return;
+      const action = dragMoveAction(zone, parent, id);
+      switch (action) {
+        case 'reserve':
+          dispatch(entitySlice.actions.dragMoveReserve(zone));
+          break;
+        case 'reset':
+          dispatch(entitySlice.actions.dragMoveReset());
+          break;
+        default:
+          break;
       }
     },
     onDragEnd() {
@@ -138,6 +127,7 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
     },
   };
   const treeProps: React.ComponentProps<typeof Rect> = {
+    ...pointRef.current,
     ...tree,
     onMouseEnter() {
       if (selected) dispatch(entitySlice.actions.select(undefined));
@@ -290,23 +280,25 @@ const FlowCard: React.FC<Props> = ({ entity, dropZones, selectedStatus }) => {
   );
 
   return (
-    <Group {...rootGroupProps}>
+    <>
       {treeRect}
-      <Rect {...cardProps} fill="#2348" />
-      {textElement}
-      <Html>
-        <ThemeProvider theme={cardActionTheme}>
-          <Box sx={{ width: 0, height: 0, position: 'relative' }}>
-            {textField}
-            {saveButton}
+      <Group {...rootGroupProps}>
+        <Rect {...cardProps} fill="#2348" />
+        {textElement}
+        <Html>
+          <ThemeProvider theme={cardActionTheme}>
+            <Box sx={{ width: 0, height: 0, position: 'relative' }}>
+              {textField}
+              {saveButton}
 
-            {deleteButtonBox}
-            {editButtonBox}
-            {displayBox}
-          </Box>
-        </ThemeProvider>
-      </Html>
-    </Group>
+              {deleteButtonBox}
+              {editButtonBox}
+              {displayBox}
+            </Box>
+          </ThemeProvider>
+        </Html>
+      </Group>
+    </>
   );
 };
 

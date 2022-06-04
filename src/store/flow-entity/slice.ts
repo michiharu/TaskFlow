@@ -1,9 +1,9 @@
-import { PayloadAction as PA, Update, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction as PA, Update, createEntityAdapter, createSlice, current } from '@reduxjs/toolkit';
 
 import { uuid4 } from '../../funcs/utils';
 import { UUID } from '../../types/common';
 import type { Flow } from '../../types/flow';
-import type { FlowEntity, FlowState, Parent } from '../../types/flow-entity';
+import type { DropZone, FlowEntity, FlowState, Parent } from '../../types/flow-entity';
 import type { RootState } from '../../types/store';
 
 import { calculate, entityFactory } from './funcs';
@@ -30,7 +30,7 @@ export const entitySlice = createSlice({
 
       calculate(state, adapter);
     },
-    add(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
+    add(state, { payload: parent }: PA<Parent>) {
       const parentEntity = state.entities[parent.id];
       if (!parentEntity) throw new Error();
       const newId = uuid4();
@@ -45,7 +45,7 @@ export const entitySlice = createSlice({
 
       calculate(state, adapter);
     },
-    delete(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
+    delete(state, { payload: parent }: PA<Parent>) {
       const parentEntity = state.entities[parent.id];
       if (!parentEntity) throw new Error();
       const id = parentEntity.childIds.splice(parent.index, 1)[0];
@@ -82,38 +82,71 @@ export const entitySlice = createSlice({
 
       calculate(state, adapter);
     },
-    dragEnter(state, { payload: parent }: PA<Omit<Parent, 'direction'>>) {
-      if (!state.selected) throw new Error();
-      const selectedEntity = state.entities[state.selected.id];
-      if (!selectedEntity || !selectedEntity.parent) throw new Error();
+    dragMoveReset(state) {
+      // reset reserved
+      state.ids.forEach((id) => {
+        const entity = state.entities[id];
+        if (!entity) throw new Error();
+        entity.reserved = undefined;
+      });
 
-      if (selectedEntity.parent.id === parent.id) {
-        const parentEntity = state.entities[parent.id];
-        if (!parentEntity) throw new Error();
-        if (selectedEntity.parent.index < parent.index) {
-          parentEntity.childIds.splice(parent.index, 0, selectedEntity.id);
-          parentEntity.childIds.splice(selectedEntity.parent.index, 1);
-        } else {
-          parentEntity.childIds.splice(selectedEntity.parent.index, 1);
-          parentEntity.childIds.splice(parent.index, 0, selectedEntity.id);
-        }
-      } else {
-        // move to
-        const toParent = state.entities[parent.id];
-        if (!toParent) throw new Error();
-        toParent.childIds.splice(parent.index, 0, selectedEntity.id);
+      calculate(state, adapter);
+    },
+    dragMoveReserve(state, { payload: { from, reservedType } }: PA<DropZone>) {
+      // reset reserved
+      state.ids.forEach((id) => {
+        const entity = state.entities[id];
+        if (!entity) throw new Error();
+        entity.reserved = undefined;
+      });
 
-        // move from
-        const fromParent = state.entities[selectedEntity.parent.id];
-        if (!fromParent) throw new Error();
-        fromParent.childIds.splice(selectedEntity.parent.index, 1);
-      }
+      const entity = state.entities[from];
+      if (!entity) throw new Error();
+      entity.reserved = reservedType;
 
       calculate(state, adapter);
     },
     dragEnd(state) {
       if (!state.selected) throw new Error();
       state.selected.status = 'moving';
+      const selectedEntity = state.entities[state.selected.id];
+      if (!selectedEntity || !selectedEntity.parent) throw new Error();
+
+      const reserves = state.ids.filter((id) => state.entities[id]?.reserved);
+      if (reserves.length > 1) throw new Error();
+      if (reserves.length === 1) {
+        const reservedEntity = state.entities[reserves[0]];
+        if (!reservedEntity) throw new Error();
+        if (reservedEntity.reserved === 'first') {
+          // move to first of root
+          reservedEntity.childIds.splice(0, 0, selectedEntity.id);
+
+          // move from
+          const selectedParentEntity = state.entities[selectedEntity.parent.id];
+          if (!selectedParentEntity) throw new Error();
+          if (reservedEntity.id === selectedEntity.parent.id) {
+            selectedParentEntity.childIds.splice(selectedEntity.parent.index + 1, 1);
+          } else {
+            selectedParentEntity.childIds.splice(selectedEntity.parent.index, 1);
+          }
+        } else {
+          // reservedEntity.reserved === 'next'
+          const { parent } = reservedEntity;
+          if (!parent) throw new Error();
+          const reservedParentEntity = state.entities[parent.id];
+          if (!reservedParentEntity) throw new Error();
+
+          // move to
+          reservedParentEntity.childIds.splice(parent.index + 1, 0, selectedEntity.id);
+
+          // move from
+          const isOlderSibling = selectedEntity.parent.id === parent.id && selectedEntity.parent.index > parent.index;
+          const removeIndex = selectedEntity.parent.index + (isOlderSibling ? 1 : 0);
+          const selectedParentEntity = state.entities[selectedEntity.parent.id];
+          if (!selectedParentEntity) throw new Error();
+          selectedParentEntity.childIds.splice(removeIndex, 1);
+        }
+      }
 
       calculate(state, adapter);
     },

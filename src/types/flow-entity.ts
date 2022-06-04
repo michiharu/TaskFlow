@@ -13,14 +13,20 @@ type BaseEntity = {
 };
 
 export type Direction = 'vertical' | 'horizontal';
-type BaseState = { type: FlowType; open: boolean; direction: Direction };
-type SwitchState = BaseState & { type: 'switch'; selectedIndex?: string };
-type EntityState = BaseState | SwitchState;
-export type AddablePoint = { parent: Parent; left: number; top: number };
-export type DropZone = { parent: Parent; depth: number; from: UUID } & Point & Size;
+export type ReserveType = 'first' | 'next';
+type BaseState = { type: FlowType; open: boolean; direction: Direction; reserved?: ReserveType };
+export type AddablePoint = { parent: Parent; reserved: boolean; left: number; top: number };
+export type DropZone = {
+  parent: Parent;
+  depth: number;
+  from: UUID;
+  reservedType: ReserveType;
+  reserved: boolean;
+} & Point &
+  Size;
 type RectAttributes = { point?: Point; tree?: Size; addable?: { points: AddablePoint[]; zones: DropZone[] } };
 export type Parent = { id: UUID; direction: Direction; childIds: UUID[]; index: number };
-export type FlowEntity = BaseEntity & EntityState & RectAttributes & { parent?: Parent };
+export type FlowEntity = BaseEntity & BaseState & RectAttributes & { parent?: Parent };
 export type FlowNode = FlowEntity & { children: FlowNode[] };
 
 export type FlowEntitySettings = {

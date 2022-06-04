@@ -8,6 +8,7 @@ import { Provider, ReactReduxContext, connect } from 'react-redux';
 import { Box, ThemeProvider } from '@mui/material';
 
 import AddFlowButton from '../../components/AddFlowButton';
+import DropZoneComponent from '../../components/DropZone';
 import FlexibleStage from '../../components/FlexibleStage';
 import FlowCard from '../../components/FlowCard';
 import { cardActionTheme, entitySettings as settings } from '../../const';
@@ -50,6 +51,9 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected, addab
         <FlexibleStage stageSize={stageSize}>
           <Provider store={store}>
             <Layer>
+              {/* {dropZones.map((z) => (
+                <DropZoneComponent key={`${z.parent.id}: (${z.x},${z.y})`} zone={z} selectedStatus={selected} />
+              ))} */}
               {entities.map((entity) => (
                 <FlowCard key={entity.id} entity={entity} dropZones={dropZones} selectedStatus={selected} />
               ))}
@@ -57,8 +61,11 @@ const FlowMainFC: React.FC<StateProps> = ({ stageSize, entities, selected, addab
                 <ThemeProvider theme={cardActionTheme}>
                   <Provider store={store}>
                     <Box sx={{ width: 0, height: 0, position: 'relative' }}>
-                      {(!selected || selected.status === 'selected') &&
-                        addablePoints.map((p) => <AddFlowButton key={`${p.left}:${p.top}`} point={p} />)}
+                      {!selected || selected.status === 'selected'
+                        ? addablePoints.map((p) => <AddFlowButton key={`${p.left}:${p.top}`} point={p} />)
+                        : addablePoints
+                            .filter((p) => p.reserved)
+                            .map((p) => <AddFlowButton key={`${p.left}:${p.top}`} point={p} />)}
                     </Box>
                   </Provider>
                 </ThemeProvider>

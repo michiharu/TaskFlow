@@ -22,6 +22,7 @@ const setupStore = () => {
   const router = routerMiddleware(history);
   const saga = createSagaMiddleware();
   const store = configureStore({
+    devTools: { actionsBlacklist: ['flow/set', 'flow-entity/dragMoveReset'] },
     reducer: rootReducer,
     middleware: (getDefault) => getDefault({ thunk: false }).concat([router, saga]),
   });
