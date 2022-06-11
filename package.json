@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "coverage": "npm run test -- --coverage .",
-    "deploy": "gh-pages -d dist",
+    "deploy": "npm run build && gh-pages -d dist",
     "dev": "vite",
     "fix": "npm run format && npm run lint && npx sort-package-json",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
